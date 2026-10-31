@@ -49,3 +49,12 @@ npm run start
     ├── package-lock.json
     └── package.json
 ```
+
+# Todo
+
+- robust reconnection logic
+- refresh -> make you out of game / leave game
+- when host joins it shows 0/7 players
+- inconsistent showing of turns
+- improve company logos
+- sort the hand cards (company and movement)

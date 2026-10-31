@@ -45,17 +45,17 @@ export default function Lobby({
         </div>
 
         <h1>
-          Gather your <span>trading crew.</span>
+          Gather your <span>trading crew!</span>
         </h1>
 
         <p className="muted">
-          Share the room code and wait for everyone to join.
+          Share the game code and wait for everyone to join.
         </p>
       </div>
 
       <div className="lobby-grid">
         <div className="panel invite-panel">
-          <div className="panel-label">YOUR ROOM CODE</div>
+          <div className="panel-label">YOUR GAME CODE</div>
 
           <div className="room-code-large">
             {gameCode || "------"}
@@ -66,18 +66,18 @@ export default function Lobby({
             onClick={copyCode}
           >
             <Copy size={15} />
-            {copied ? "Copied!" : "Copy invite code"}
+            {copied ? "Copied!" : "Copy game code"}
           </button>
 
-          <div className="invite-divider" />
+          {/* <div className="invite-divider" /> */}
 
-          <div className="invite-tip">
+          {/* <div className="invite-tip">
             <span>✦</span>
             <p>
               Send this code to your friends. They can join
               from the home screen.
             </p>
-          </div>
+          </div> */}
         </div>
 
         <div className="panel players-panel">

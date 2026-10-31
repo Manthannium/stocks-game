@@ -23,13 +23,13 @@
 // ============================================================================
 
 export const STOCKS = [
-    { id: "A", ticker: "NAV",  name: "Navi",               price: 1 },
-    { id: "B", ticker: "SLC",  name: "Slice",              price: 2 },
-    { id: "C", ticker: "MU",   name: "Micron",             price: 3 },
-    { id: "D", ticker: "QCOM", name: "Qualcomm",           price: 4 },
-    { id: "E", ticker: "NOW",  name: "Servicenow",         price: 5 },
-    { id: "F", ticker: "GS",   name: "Goldman Sachs",      price: 6 },
-    { id: "G", ticker: "PANW", name: "Palo Alto Networks", price: 8 },
+    { id: "A", ticker: "AMZN",  name: "amazon",            price: 1 },
+    { id: "B", ticker: "MSFT",  name: "microsoft",              price: 2 },
+    { id: "C", ticker: "GOOG",   name: "google",             price: 3 },
+    { id: "D", ticker: "TSLA", name: "tesla",           price: 4 },
+    { id: "E", ticker: "AAPL",  name: "apple",         price: 5 },
+    { id: "F", ticker: "META",   name: "meta",      price: 6 },
+    { id: "G", ticker: "NVDA", name: "nvidia", price: 8 },
 ];
 
 const MOVEMENTS = [-3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3

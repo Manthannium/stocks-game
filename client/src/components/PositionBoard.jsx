@@ -57,11 +57,11 @@ export default function PositionBoard({
                   <td key={getPlayerId(player) || index}>
                     <div className="position-cell">
                       <span className="long-position">
-                        L {longShares}
+                        {longShares}
                       </span>
 
                       <span className="short-position">
-                        S {shortShares}
+                        {shortShares}
                       </span>
                     </div>
                   </td>

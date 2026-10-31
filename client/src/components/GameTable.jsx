@@ -9,7 +9,8 @@ import {
   RefreshCw,
   Trophy,
   Wallet,
-  Eye
+  Eye,
+  Building
 } from "lucide-react";
 
 import StockCard from "./StockCard";
@@ -114,7 +115,7 @@ export default function GameTable({
     <section className="game-wrap">
       <div className="game-topline">
         <button className="back-link" onClick={onBack}>
-          <ArrowLeft size={16} /> Leave table
+          <ArrowLeft size={16} /> Leave Game
         </button>
 
         <div className="game-status">
@@ -127,13 +128,31 @@ export default function GameTable({
 
             {isOpen
               ? "MARKET OPEN"
-              : `ACTION ROUND ${actionRound} / 3`}
+              : `ROUND ${actionRound} / 3`}
           </span>
+
+          <div className="turn-banner">
+
+            <div>
+              <b>
+                {isOpen
+                  ? "CYCLE COMPLETE"
+                  : isMyTurn
+                  ? "Your turn"
+                  : `${currentTurnName}'s turn`}
+              </b>
+            </div>
+
+            {isMyTurn && (
+              <span className="your-turn-pulse" />
+            )}
+          </div>
+
         </div>
       </div>
 
       <div className="game-heading">
-        <div>
+        {/* <div>
           <div className="eyebrow">
             <span className="eyebrow-dot" />
             LIVE EXCHANGE · ROOM {gameCode}
@@ -142,9 +161,9 @@ export default function GameTable({
           <h1>
             Market <span>floor.</span>
           </h1>
-        </div>
+        </div> */}
 
-        <div className="turn-banner">
+        {/* <div className="turn-banner">
           <div className="turn-icon">
             <Clock3 size={18} />
           </div>
@@ -170,7 +189,7 @@ export default function GameTable({
           {isMyTurn && (
             <span className="your-turn-pulse" />
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Player financial summary */}
@@ -194,20 +213,20 @@ export default function GameTable({
 
         <div className="stat-card">
           <span>
-            <Trophy size={15} /> EST. NET WORTH
+            <Trophy size={15} /> NET WORTH
           </span>
 
           <b>{money(myNetWorth)}</b>
         </div>
 
-        <div className="stat-card">
+        {/* <div className="stat-card">
           <span>◎ PLAYERS</span>
 
           <b>
             {players.length}
             <small> / {game?.maxPlayers || 7}</small>
           </b>
-        </div>
+        </div> */}
       </div>
 
       <div className="game-columns">
@@ -216,19 +235,19 @@ export default function GameTable({
 
           <div className="section-heading">
             <div>
-              <span className="section-kicker">
+              {/* <span className="section-kicker">
                 THE EXCHANGE
-              </span>
+              </span> */}
 
               <h2>
                 Market watch
-                <small>{activeStocks.length} active</small>
+                <small>{activeStocks.length} stocks active</small>
               </h2>
             </div>
 
-            <span className="market-live">
+            {/* <span className="market-live">
               <i /> LIVE PRICES
-            </span>
+            </span> */}
           </div>
 
           <div className="stock-grid">
@@ -251,7 +270,7 @@ export default function GameTable({
                   PORTFOLIO OVERVIEW
                 </div>
 
-                <h3>Position board</h3>
+                {/* <h3>Position board</h3> */}
               </div>
 
               <span className="legend">
@@ -272,20 +291,15 @@ export default function GameTable({
             <div className="panel-heading">
               <div>
                 <div className="panel-label">
-                  YOUR PRIVATE HAND
+                  YOUR HAND
                 </div>
 
-                <h3>
+                {/* <h3>
                   <Hand size={17} />
                   Movement cards
                   <small>{hand.length} cards</small>
-                </h3>
+                </h3> */}
               </div>
-
-              <span className="private-tag">
-                <Eye size={13} />
-                Only you can see these
-              </span>
             </div>
 
             {hand.length > 0 ? (
@@ -309,7 +323,7 @@ export default function GameTable({
         {/* Right sidebar */}
 
         <aside className="side-column">
-          {selectedStock && (
+          {/* {selectedStock && (
             <div className="selected-stock-panel">
               <div className="selected-stock-title">
                 <img src={getStockLogo(selectedStock)} alt="" />
@@ -361,18 +375,7 @@ export default function GameTable({
                 )}
               </div>
             </div>
-          )}
-
-          {/* Trade ticket */}
-
-          <TradePanel
-            stock={selectedStock}
-            position={myPosition}
-            cash={me?.cash || 0}
-            isMyTurn={isMyTurn}
-            onAction={onAction}
-            busy={busy}
-          />
+          )} */}
 
           {/* Turn order */}
 
@@ -380,10 +383,10 @@ export default function GameTable({
             <div className="panel-heading">
               <div>
                 <div className="panel-label">
-                  TABLE STATUS
+                  TURN ORDER
                 </div>
 
-                <h3>Turn order</h3>
+                {/* <h3>Turn order</h3> */}
               </div>
 
               <span className="turn-round">
@@ -437,6 +440,17 @@ export default function GameTable({
             )}
           </div>
 
+          {/* Trade ticket */}
+
+          <TradePanel
+            stock={selectedStock}
+            position={myPosition}
+            cash={me?.cash || 0}
+            isMyTurn={isMyTurn}
+            onAction={onAction}
+            busy={busy}
+          />
+
           {/* Leaderboard appears after open phase */}
 
           {isOpen && (
@@ -487,6 +501,8 @@ export default function GameTable({
               )}
             </div>
           )}
+
+          
         </aside>
       </div>
     </section>

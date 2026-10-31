@@ -286,9 +286,10 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <button className="brand-button" onClick={leaveGame}>
-          <span className="brand-mark">M</span>
+          <span className="brand-mark">S</span>
           <span>
-            market<span className="brand-accent">rush</span>
+            {/* market<span className="brand-accent">rush</span> */}
+            stocks
           </span>
         </button>
 
@@ -353,7 +354,7 @@ export default function App() {
       </main>
 
       <footer className="footer-note">
-        A strategy game of risk, timing, and market moves.
+        Made with 💜 by Manthan Patel
       </footer>
     </div>
   );

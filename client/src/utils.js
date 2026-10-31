@@ -18,7 +18,7 @@ export function getStockLogo(stock) {
   const key = `${stock?.ticker || ""} ${stock?.name || ""}`.toLowerCase();
 
   if (key.includes("meta") || key.includes("facebook")) {
-    return "/logos/meta.svg";
+    return "/logos/meta.jpeg";
   }
 
   if (

@@ -76,7 +76,7 @@ export default function TradePanel({
       <div className="panel-heading">
         <div>
           <div className="panel-label">PLACE YOUR MOVE</div>
-          <h3>Trade ticket</h3>
+          {/* <h3>Trade ticket</h3> */}
         </div>
 
         <span className="price-mini">
@@ -104,7 +104,7 @@ export default function TradePanel({
       <div className="quantity-row">
         <div>
           <label>QUANTITY</label>
-          <small>Whole shares only</small>
+          {/* <small>Whole shares only</small> */}
         </div>
 
         <div className="quantity-control">

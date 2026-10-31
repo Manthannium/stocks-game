@@ -39,20 +39,20 @@ export default function Card({ card, index }) {
         {movement.toFixed(1)}
       </div>
 
-      <div className="card-caption">PRICE MOVE</div>
+      {/* <div className="card-caption">PRICE MOVE</div> */}
 
       <div className="card-bottom">
-        <span>
+        {/* <span>
           {positive
             ? "BULLISH"
             : movement < 0
             ? "BEARISH"
             : "FLAT"}
-        </span>
+        </span> */}
 
-        <span>
-          #{String(index + 1).padStart(2, "0")}
-        </span>
+         {/* <span>
+          {String(index + 1)}
+        </span> */}
       </div>
     </div>
   );
