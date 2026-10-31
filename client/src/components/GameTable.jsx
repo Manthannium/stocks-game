@@ -36,7 +36,8 @@ export default function GameTable({
   busy,
   onAction,
   onNextCycle,
-  onBack
+  onBack,
+  onLeave
 }) {
   const stocks = safeArray(game?.stocks);
   const players = safeArray(game?.players);
@@ -299,6 +300,13 @@ export default function GameTable({
                       {getPlayerId(player) === playerId && (
                         <small> YOU</small>
                       )}
+
+                      {player.isOnline && (
+                        <span
+                          className="online-dot"
+                          title="Online"
+                        />
+                      )}
                     </span>
 
                     {playerIsCurrent && !isOpen && (
@@ -308,6 +316,14 @@ export default function GameTable({
                 );
               })}
             </div>
+
+            {/* <button
+              className="leave-game-button"
+              onClick={onLeave}
+              disabled={busy}
+            >
+              Leave Game
+            </button> */}
 
             {isMyTurn && (
               <button

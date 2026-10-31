@@ -1387,6 +1387,44 @@ button:disabled {
   margin-left: 4px;
 }
 
+.turn-player {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.45);
+}
+
+.leave-game-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.leave-game-button:hover {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.leave-game-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .active-turn .turn-number {
   background: #332c5d;
   color: #c6bdff;

@@ -51,12 +51,7 @@ npm run start
 ```
 
 # Todo
-
-- when user leaves, remove his turn and all logic and sell his shares
-- show online / connected status of each player
-
-- Allow admin to config stock settings
-
 Game improvement
 - fixed number of shares
-- cash redeem option
+- cash redeem option and other special cards
+- Allow admin to config stock settings

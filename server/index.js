@@ -776,6 +776,7 @@ io.on("connection", socket => {
             gameId: code,
             playerId,
         });
+        player.isOnline = true;
 
         // Add the new socket to the existing game room.
         socket.join(code);
@@ -818,6 +819,101 @@ io.on("connection", socket => {
     });
 
     // ========================================================================
+    // LEAVE GAME
+    // ========================================================================
+
+    socket.on("leaveGame", (_payload = {}, callback) => {
+        const context = getSocketGame(socket.id);
+
+        if (!context.success) {
+            return reply(callback, context);
+        }
+
+        const { game, gameId, playerId } = context;
+
+        // Permanently remove the player and their game assets.
+        const result = GameLogic.removePlayer(game, playerId);
+
+        if (!result.success) {
+            return reply(callback, result);
+        }
+
+        // Remove every socket belonging to this player.
+        // This also handles a player leaving from multiple tabs.
+        for (const [socketId, info] of playerSockets.entries()) {
+            if (
+                info.gameId === gameId &&
+                info.playerId === playerId
+            ) {
+                playerSockets.delete(socketId);
+
+                const playerSocket = io.sockets.sockets.get(socketId);
+
+                if (playerSocket) {
+                    playerSocket.leave(gameId);
+                }
+            }
+        }
+
+        // If nobody remains, delete the game completely.
+        if (result.gameEmpty) {
+            games.delete(gameId);
+            io.in(gameId).socketsLeave(gameId);
+
+            console.log(`Game ${gameId} deleted because all players left`);
+
+            return reply(callback, {
+                success: true,
+                gameDeleted: true,
+                message: "You have left the game.",
+            });
+        }
+
+        // Notify remaining players.
+        broadcastToGame(gameId, "playerLeft", {
+            playerId,
+            playerName: result.playerName,
+            newHostId: result.hostId,
+        });
+
+        // The game may have ended because fewer than two players remain.
+        if (result.gameFinished) {
+            broadcastToGame(gameId, "gameFinished", {
+                leaderboard: game.leaderboard,
+                reason: "Not enough players remain.",
+            });
+        }
+
+        // The departing player may have been the last player in a round.
+        // In that case, GameLogic.removePlayer() advances the game.
+        if (result.progression?.cycleComplete) {
+            broadcastToGame(gameId, "openPhaseCompleted", {
+                openResult: result.progression.openResult,
+            });
+        } else if (result.progression) {
+            broadcastToGame(gameId, "turnChanged", {
+                cycle: game.cycle,
+                actionRound: game.actionRound,
+                currentPlayerId: result.progression.currentPlayerId,
+            });
+        }
+
+        // Send each remaining player their updated private game view.
+        broadcastGameState(gameId);
+
+        console.log(
+            `${result.playerName} permanently left game ${gameId}`
+        );
+
+        return reply(callback, {
+            success: true,
+            gameDeleted: false,
+            gameFinished: result.gameFinished,
+            message: "You have permanently left the game.",
+        });
+    });
+
+    // ========================================================================
     // DISCONNECT
     // ========================================================================
 
@@ -829,12 +925,11 @@ io.on("connection", socket => {
 
         const playerInfo = playerSockets.get(socket.id);
 
-        if(playerInfo) {
-            const {
-                gameId,
-                playerId,
-            } = playerInfo;
+        // Remove this socket before checking for other connections.
+        playerSockets.delete(socket.id);
 
+        if (playerInfo) {
+            const { gameId, playerId } = playerInfo;
             const game = games.get(gameId);
 
             if (game) {
@@ -842,22 +937,24 @@ io.on("connection", socket => {
                     item => item.id === playerId
                 );
 
-                if (player) {
-                    broadcastToGame(
-                        gameId,
-                        "playerDisconnected",
-                        {
-                            playerId,
-                            playerName: player.name,
-                        }
-                    );
-                }
-                else {
+                // A player may have multiple tabs connected.
+                const stillConnected = [...playerSockets.values()].some(
+                    info =>
+                        info.gameId === gameId &&
+                        info.playerId === playerId
+                );
+
+                if (player && !stillConnected) {
                     player.isOnline = false;
+
+                    broadcastToGame(gameId, "playerDisconnected", {
+                        playerId,
+                        playerName: player.name,
+                    });
+
+                    broadcastGameState(gameId);
                 }
             }
-
-            playerSockets.delete(socket.id);
         }
 
         console.log(
@@ -866,6 +963,7 @@ io.on("connection", socket => {
             `(Total: ${totalConnectedPlayers}/${MAX_TOTAL_PLAYERS})`
         );
     });
+
 });
 
 // ============================================================================
