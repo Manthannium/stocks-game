@@ -322,6 +322,122 @@ export function addPlayer(game, player) {
     };
 }
 
+export function removePlayer(game, playerId) {
+    const removedIndex = game.players.findIndex(
+        player => player.id === playerId
+    );
+
+    if (removedIndex === -1) {
+        return {
+            success: false,
+            error: "Player not found",
+        };
+    }
+
+    const [removedPlayer] = game.players.splice(removedIndex, 1);
+
+    // During active play, return the departing player's cards
+    // for active companies to the deck.
+    // Cards are already in the deck after the open phase,
+    // so do not add them again between cycles.
+    if (game.phase === "playing") {
+        const returnedCards = (removedPlayer.cards || []).filter(card => {
+            const stock = getStock(game, card.stockId);
+            return stock?.isActive === true;
+        });
+
+        game.deck = shuffleDeck([
+            ...game.deck,
+            ...returnedCards,
+        ]);
+    }
+
+    // Remove the departing player's cards.
+    removedPlayer.cards = [];
+
+    // Release all their positions from every stock.
+    for (const stockId of Object.keys(game.positionBoard || {})) {
+        delete game.positionBoard[stockId][playerId];
+    }
+
+    // Remove them from any existing leaderboard.
+    game.leaderboard = game.leaderboard.filter(
+        entry => entry.playerId !== playerId
+    );
+
+    // Transfer host responsibility if necessary.
+    if (game.hostId === playerId) {
+        game.hostId = game.players[0]?.id || null;
+    }
+
+    // Recalculate the visible turn-order numbers.
+    game.players.forEach((player, index) => {
+        player.turnOrder = index + 1;
+    });
+
+    let progression = null;
+
+    // If the game is active and fewer than two players remain,
+    // finish the game.
+    if (
+        game.phase !== "waiting" &&
+        game.phase !== "finished" &&
+        game.players.length < 2
+    ) {
+        game.phase = "finished";
+        game.currentPlayerIndex = 0;
+        game.actionRound = 0;
+        game.leaderboard = getLeaderboard(game);
+    }
+
+    // Adjust turn progression if the game is still active.
+    else if (game.phase === "playing") {
+
+        if (removedIndex < game.currentPlayerIndex) {
+            // A player who already acted was removed.
+            // The current player's index shifts left.
+            game.currentPlayerIndex--;
+        }
+
+        else if (removedIndex === game.currentPlayerIndex) {
+            // The player whose turn it was has left.
+
+            if (game.currentPlayerIndex >= game.players.length) {
+                // The departing player was last in the turn order.
+                // Complete this round and advance normally.
+                game.currentPlayerIndex = game.players.length - 1;
+                progression = advanceTurn(game);
+            }
+
+            else {
+                // The next player now occupies the same index.
+                progression = {
+                    cycleComplete: false,
+                    actionRound: game.actionRound,
+                    currentPlayerId:
+                        game.players[game.currentPlayerIndex].id,
+                };
+            }
+        }
+    }
+
+    else {
+        game.currentPlayerIndex = 0;
+    }
+
+    return {
+        success: true,
+        playerId,
+        playerName: removedPlayer.name,
+        hostId: game.hostId,
+        playerCount: game.players.length,
+        gameEmpty: game.players.length === 0,
+        gameFinished: game.phase === "finished",
+        progression,
+    };
+}
+
+
 // ============================================================================
 // START GAME
 // ============================================================================

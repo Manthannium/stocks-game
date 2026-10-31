@@ -321,6 +321,29 @@ export default function App() {
     setScreen("landing");
   }
 
+  const handleLeaveGame = () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently leave this game? Your cash, cards and stock positions will be removed."
+    );
+
+    if (!confirmed) return;
+
+    socket.emit("leaveGame", {}, (response) => {
+      if (!response?.success) {
+        setNotice(
+          response?.error || "Unable to leave the game."
+        );
+        return;
+      }
+
+      // Remove the saved reconnect session.
+      localStorage.removeItem(SESSION_KEY);
+
+      // Return to the landing screen.
+      window.location.reload();
+    });
+  };
+
   const isHost =
     game?.hostPlayerId === playerId ||
     game?.hostId === playerId ||
@@ -393,6 +416,7 @@ export default function App() {
             onAction={takeTurn}
             onNextCycle={startNextCycle}
             onBack={leaveGame}
+            onLeave={handleLeaveGame}
           />
         )}
       </main>
