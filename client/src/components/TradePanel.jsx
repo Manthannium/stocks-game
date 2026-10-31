@@ -75,7 +75,7 @@ export default function TradePanel({
     <div className="panel trade-panel">
       <div className="panel-heading">
         <div>
-          <div className="panel-label">PLACE YOUR MOVE</div>
+          <div className="panel-label">PLACE YOUR TRADE</div>
           {/* <h3>Trade ticket</h3> */}
         </div>
 

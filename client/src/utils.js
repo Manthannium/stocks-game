@@ -30,7 +30,7 @@ export function getStockLogo(stock) {
   }
 
   if (key.includes("nvidia") || key.includes("nvda")) {
-    return "/logos/nvidia.svg";
+    return "/logos/nvidia.png";
   }
 
   if (key.includes("microsoft") || key.includes("msft")) {
@@ -38,15 +38,15 @@ export function getStockLogo(stock) {
   }
 
   if (key.includes("amazon") || key.includes("amzn")) {
-    return "/logos/amazon.svg";
+    return "/logos/amazon.png";
   }
 
   if (key.includes("apple") || key.includes("aapl")) {
     return "/logos/apple.svg";
   }
 
-  if (key.includes("tesla") || key.includes("tsla")) {
-    return "/logos/tesla.svg";
+  if (key.includes("palo-alto") || key.includes("panw")) {
+    return "/logos/paloalto.png";
   }
 
   return "/logos/default.svg";

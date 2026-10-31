@@ -52,9 +52,11 @@ npm run start
 
 # Todo
 
-- robust reconnection logic
-- refresh -> make you out of game / leave game
-- when host joins it shows 0/7 players
-- inconsistent showing of turns
-- improve company logos
-- sort the hand cards (company and movement)
+- when user leaves, remove his turn and all logic and sell his shares
+- show online / connected status of each player
+
+- Allow admin to config stock settings
+
+Game improvement
+- fixed number of shares
+- cash redeem option

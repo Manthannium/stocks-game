@@ -23,13 +23,13 @@
 // ============================================================================
 
 export const STOCKS = [
-    { id: "A", ticker: "AMZN",  name: "amazon",            price: 1 },
-    { id: "B", ticker: "MSFT",  name: "microsoft",              price: 2 },
-    { id: "C", ticker: "GOOG",   name: "google",             price: 3 },
-    { id: "D", ticker: "TSLA", name: "tesla",           price: 4 },
-    { id: "E", ticker: "AAPL",  name: "apple",         price: 5 },
-    { id: "F", ticker: "META",   name: "meta",      price: 6 },
-    { id: "G", ticker: "NVDA", name: "nvidia", price: 8 },
+    { id: "A", ticker: "AMZN",  name: "Amazon",            price: 1 },
+    { id: "B", ticker: "MSFT",  name: "Microsoft",              price: 2 },
+    { id: "C", ticker: "GOOG",   name: "Google",             price: 3 },
+    { id: "D", ticker: "PANW", name: "Palo Alto",           price: 4 },
+    { id: "E", ticker: "AAPL",  name: "Apple",         price: 5 },
+    { id: "F", ticker: "META",   name: "Meta",      price: 6 },
+    { id: "G", ticker: "NVDA", name: "Nvidia", price: 8 },
 ];
 
 const MOVEMENTS = [-3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3
@@ -259,6 +259,7 @@ export function createGame(gameId, hostPlayer) {
             turnOrder: null,
             cards: [],
             cash: PURSE,
+            isOnline: true,
         },
     ];
 
@@ -313,6 +314,7 @@ export function addPlayer(game, player) {
         turnOrder: null,
         cards: [],
         cash: PURSE,
+        isOnline: true,
     });
 
     return {
@@ -1010,6 +1012,7 @@ export function getPlayerView(game, playerId) {
             turnOrder: player.turnOrder,
             cash: roundMoney(player.cash),
             cardsCount: player.cards.length,
+            isOnline: Boolean(player.isOnline),
         };
 
         // Cards are public only after the open phase.

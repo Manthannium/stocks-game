@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-
 import { socket, emitWithAck } from "./socket";
-
 import LandingPage from "./components/LandingPage";
 import Lobby from "./components/Lobby";
 import GameTable from "./components/GameTable";
 
-const SESSION_KEY = "market-rush-session";
+const SESSION_KEY = "stocks-game-session";
 
 export default function App() {
   const [screen, setScreen] = useState("landing");
@@ -20,8 +18,61 @@ export default function App() {
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    const onConnect = () => setConnection("connected");
-    const onDisconnect = () => setConnection("disconnected");
+    const onConnect = () => {
+      setConnection("connected");
+
+      // Automatically rejoin the previous game after a reload
+      // or Socket.IO reconnection.
+      const saved = localStorage.getItem(SESSION_KEY);
+
+      if (!saved) return;
+
+      try {
+        const session = JSON.parse(saved);
+        const savedGameCode = session.gameCode;
+        const savedPlayerId = session.playerId;
+
+        if (!savedGameCode || !savedPlayerId) return;
+
+        socket.emit(
+          "rejoinGame",
+          {
+            gameCode: savedGameCode,
+            playerId: savedPlayerId,
+          },
+          (response) => {
+            if (!response?.success) {
+              console.error(
+                "Could not rejoin game:",
+                response?.message || "Unknown error"
+              );
+              return;
+            }
+
+            setGameCode(response.gameCode || savedGameCode);
+            setPlayerId(response.playerId || savedPlayerId);
+
+            // The callback returns the player's game state.
+            if (response.gameState) {
+              setGame(response.gameState);
+
+              setScreen(
+                response.gameState.phase === "waiting"
+                  ? "lobby"
+                  : "game"
+              );
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error restoring game session:", error);
+        localStorage.removeItem(SESSION_KEY);
+      }
+    };
+
+    const onDisconnect = () => {
+      setConnection("disconnected");
+    };
 
     const onGameState = (payload) => {
       const incomingGame = payload?.game || payload;
@@ -74,6 +125,7 @@ export default function App() {
       setNotice("The game has finished.");
     };
 
+    // Register listeners
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
 
@@ -85,18 +137,10 @@ export default function App() {
     socket.on("turnChanged", onTurnChanged);
     socket.on("gameFinished", onGameFinished);
 
-    // Restore the locally saved session details.
-    const saved = localStorage.getItem(SESSION_KEY);
-
-    if (saved) {
-      try {
-        const session = JSON.parse(saved);
-
-        setGameCode(session.gameCode || "");
-        setPlayerId(session.playerId || "");
-      } catch {
-        localStorage.removeItem(SESSION_KEY);
-      }
+    // Handle the case where the socket is already connected
+    // when this component mounts.
+    if (socket.connected) {
+      onConnect();
     }
 
     return () => {

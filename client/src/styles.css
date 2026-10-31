@@ -724,8 +724,8 @@ button:disabled {
 
 .stat-strip {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 10px;
+  grid-template-columns: 1fr; 
+  gap: 10px;                  
   margin-bottom: 23px;
 }
 
@@ -734,6 +734,9 @@ button:disabled {
   border: 1px solid #26344e;
   border-radius: 11px;
   padding: 14px 16px;
+  display: flex;                  /* Makes the card a flex container */
+  align-items: center;            /* Vertically centers field and value */
+  justify-content: space-between; /* Pushes field left, value right */
 }
 
 .stat-card span {
@@ -750,9 +753,7 @@ button:disabled {
 }
 
 .stat-card > b {
-  display: block;
   font: 600 19px 'Space Grotesk';
-  margin-top: 9px;
 }
 
 .stat-card > b small {
@@ -804,16 +805,16 @@ button:disabled {
 
 .stock-grid {
   display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
+  grid-template-columns: repeat(7,minmax(0,1fr));
   gap: 10px;
 }
-
-/* Stock cards */
 
 .stock-card {
   position: relative;
   text-align: left;
   min-width: 0;
+  width: 100%;          /* Allows it to shrink responsively */
+  max-width: 150px;     /* Adjust this value (e.g., 200px, 240px, 280px) to make it narrower or wider */
   padding: 13px;
   background: #121c30;
   border: 1px solid #293750;
@@ -1031,7 +1032,7 @@ button:disabled {
 .hand-card {
   width: 83px;
   min-width: 83px;
-  height: 133px;
+  height: 83px;
   border-radius: 10px;
   padding: 8px;
   background: linear-gradient(155deg,#1c2b45,#121b2e);
@@ -1402,7 +1403,7 @@ button:disabled {
 
 .pass-button {
   width: 100%;
-  background: #202a42;
+  background: #6c5be0;
   border: 1px solid #34415c;
   border-radius: 8px;
   color: #c2cce0;

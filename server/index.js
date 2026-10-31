@@ -506,12 +506,6 @@ io.on("connection", socket => {
         );
     });
 
-    socket.on("gameState", (payload) => {
-        setGame(payload.game);
-        setGameCode(payload.gameCode);
-        setPlayerId(payload.playerId);
-    });
-
     // ========================================================================
     // TAKE TURN
     // ========================================================================
@@ -726,8 +720,8 @@ io.on("connection", socket => {
     // ========================================================================
 
     socket.on("rejoinGame", (payload = {}, callback) => {
-        const code = payload.gameCode
-            ?.trim()
+        const code = String(payload.gameCode || "")
+            .trim()
             .toUpperCase();
 
         const playerId = payload.playerId;
@@ -744,10 +738,11 @@ io.on("connection", socket => {
         if (!game) {
             return reply(callback, {
                 success: false,
-                error: "Game not found",
+                error: "Game not found. The game may have expired.",
             });
         }
 
+        // Find the existing player. Do not create a new player.
         const player = game.players.find(
             item => item.id === playerId
         );
@@ -755,48 +750,70 @@ io.on("connection", socket => {
         if (!player) {
             return reply(callback, {
                 success: false,
-                error: "Player not found in game",
+                error: "Player not found in this game.",
             });
         }
 
         // Remove any previous socket mapping for this player.
+        // This handles cases where the old connection is still present.
         for (const [oldSocketId, info] of playerSockets.entries()) {
             if (
                 info.gameId === code &&
                 info.playerId === playerId
             ) {
                 playerSockets.delete(oldSocketId);
+
+                const oldSocket = io.sockets.sockets.get(oldSocketId);
+
+                if (oldSocket) {
+                    oldSocket.leave(code);
+                }
             }
         }
 
+        // Associate the new socket with the existing player.
         playerSockets.set(socket.id, {
             gameId: code,
             playerId,
         });
 
+        // Add the new socket to the existing game room.
         socket.join(code);
 
+        // Get this player's private game view.
+        const state = getSocketGameState(code, playerId);
+
+        if (!state) {
+            playerSockets.delete(socket.id);
+
+            return reply(callback, {
+                success: false,
+                error: "Could not restore game state.",
+            });
+        }
+
+        // Send the state directly to the reconnecting player.
+        socket.emit("gameState", state);
+
+        // Return the restored state through the acknowledgement callback.
         reply(callback, {
             success: true,
-
             gameCode: code,
             playerId,
-
-            gameState: GameLogic.getPlayerView(
-                game,
-                playerId
-            ),
+            gameState: state.game,
         });
 
+        // Notify the other players.
         broadcastToGame(code, "playerReconnected", {
             playerId,
             playerName: player.name,
         });
 
+        // Refresh every player's view.
         broadcastGameState(code);
 
         console.log(
-            `${player.name} rejoined game ${code}`
+            `${player.name} reconnected to game ${code}`
         );
     });
 
@@ -812,7 +829,7 @@ io.on("connection", socket => {
 
         const playerInfo = playerSockets.get(socket.id);
 
-        if (playerInfo) {
+        if(playerInfo) {
             const {
                 gameId,
                 playerId,
@@ -834,6 +851,9 @@ io.on("connection", socket => {
                             playerName: player.name,
                         }
                     );
+                }
+                else {
+                    player.isOnline = false;
                 }
             }
 
