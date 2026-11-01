@@ -869,6 +869,13 @@ button:disabled {
   color: #9ba8bf;
 }
 
+.stock-title-row {
+  display: flex;
+  justify-content: space-between; /* Pushes name to the left, ticker to the right */
+  align-items: center;            /* Vertically aligns them on the same line */
+  width: 100%;
+}
+
 .stock-name {
   font-size: 11px;
   font-weight: 600;
@@ -881,7 +888,7 @@ button:disabled {
 .stock-ticker {
   font: 9px 'DM Mono';
   color: #7f8ba3;
-  margin-top: 3px;
+  margin-top: 10px;
 }
 
 .stock-price {
@@ -890,9 +897,9 @@ button:disabled {
 }
 
 .stock-move {
-  font: 9px 'DM Mono';
+  font: 10px 'DM Mono';
   color: #8490a7;
-  margin-top: 3px;
+  margin-top: 12px;
 }
 
 .positive-text {
@@ -960,7 +967,7 @@ button:disabled {
 .position-table th {
   text-align: left;
   color: #75829c;
-  font: 9px 'DM Mono';
+  font: 12px 'DM Mono';
   letter-spacing: .7px;
   padding: 9px 11px;
   border-bottom: 1px solid #293650;
@@ -979,7 +986,7 @@ button:disabled {
 }
 
 .table-stock span {
-  font: 500 10px 'DM Mono';
+  font: 500 12px 'DM Mono';
 }
 
 .table-stock small {
@@ -995,7 +1002,7 @@ button:disabled {
 .short-position {
   padding: 3px 5px;
   border-radius: 4px;
-  font: 9px 'DM Mono';
+  font: 12px 'DM Mono';
 }
 
 .long-position {
@@ -1535,6 +1542,31 @@ button:disabled {
 
 .you-row .leader-name {
   color: #c5bbff;
+}
+
+.stock-supply {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stock-supply-label {
+    color: #94a3b8;
+    font-size: 8px;
+}
+
+.stock-supply-value {
+    color: #22c55e;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.stock-supply-total {
+    color: #64748b;
+    font-weight: 400;
 }
 
 /* Responsive layouts */

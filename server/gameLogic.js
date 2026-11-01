@@ -23,13 +23,13 @@
 // ============================================================================
 
 export const STOCKS = [
-    { id: "A", ticker: "AMZN",  name: "Amazon",            price: 1 },
-    { id: "B", ticker: "MSFT",  name: "Microsoft",              price: 2 },
-    { id: "C", ticker: "GOOG",   name: "Google",             price: 3 },
-    { id: "D", ticker: "PANW", name: "Palo Alto",           price: 4 },
-    { id: "E", ticker: "AAPL",  name: "Apple",         price: 5 },
-    { id: "F", ticker: "META",   name: "Meta",      price: 6 },
-    { id: "G", ticker: "NVDA", name: "Nvidia", price: 8 },
+    { id: "A", ticker: "AMZN",  name: "Amazon",     price: 1 },
+    { id: "B", ticker: "MSFT",  name: "Microsoft",  price: 2 },
+    { id: "C", ticker: "GOOG",  name: "Google",     price: 3 },
+    { id: "D", ticker: "PANW",  name: "Palo Alto",  price: 4 },
+    { id: "E", ticker: "AAPL",  name: "Apple",      price: 5 },
+    { id: "F", ticker: "META",  name: "Meta",       price: 6 },
+    { id: "G", ticker: "NVDA",  name: "Nvidia",     price: 8 },
 ];
 
 const MOVEMENTS = [-3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3
@@ -49,8 +49,8 @@ export const PURSE = 20000;
 
 // Additional cash given to every player at the beginning
 // of each subsequent cycle.
-export const ADDITIONAL_PURSE = 20000;
-
+export const ADDITIONAL_PURSE = 10000;
+export const TOTAL_SHARES_PER_STOCK = 50000;
 export const CARDS_IN_HAND = 10;
 export const MAX_PLAYERS = 7;
 export const ACTION_ROUNDS = 3;
@@ -241,6 +241,7 @@ export function createGame(gameId, hostPlayer) {
     // Create a fresh stock object for every game.
     const stocks = STOCKS.map(stock => ({
         ...stock,
+        totalShares: TOTAL_SHARES_PER_STOCK,
         isActive: true,
         history: [
             {
@@ -611,44 +612,64 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
 
   switch (normalizedAction) {
     case "BUY": {
-      if (currentPlayer.cash < tradeValue) {
-        throw new Error("Insufficient cash to buy these shares.");
-      }
+        if (currentPlayer.cash < tradeValue) {
+            throw new Error("Insufficient cash to buy these shares.");
+        }
 
-      currentPlayer.cash -= tradeValue;
-      position.longShares += shares;
-      break;
+        // Calculate shares currently owned by all players.
+        const totalOwnedShares = game.players.reduce(
+            (total, player) => {
+                const playerPosition = getPosition(
+                    game,
+                    stockId,
+                    player.id
+                );
+
+                return total + (playerPosition?.longShares || 0);
+            },
+            0
+        );
+        const availableShares = stock.totalShares - totalOwnedShares;
+
+        if(shares > availableShares) {
+            throw new Error(
+                `Only ${availableShares.toLocaleString()} shares are available.`
+            );
+        }
+
+        currentPlayer.cash -= tradeValue;
+        position.longShares += shares;
+        break;
     }
 
     case "SELL": {
-      if (position.longShares < shares) {
-        throw new Error("You do not own enough shares to sell.");
-      }
+        if (position.longShares < shares) {
+            throw new Error("You do not own enough shares to sell.");
+        }
 
-      position.longShares -= shares;
-      currentPlayer.cash += tradeValue;
-      break;
+        position.longShares -= shares;
+        currentPlayer.cash += tradeValue;
+        break;
     }
 
     case "SHORT": {
-      if (tradeValue > currentPlayer.cash) {
-        throw new Error("Short position value cannot exceed available cash.");
-      }
+        if (tradeValue > currentPlayer.cash) {
+            throw new Error("Short position value cannot exceed available cash.");
+        }
 
-      position.shortShares += shares;
-      // Short-sale proceeds are not added to cash under your game rules.
-      break;
+        position.shortShares += shares;
+        // Short-sale proceeds are not added to cash under your game rules.
+        break;
     }
 
     case "UNSHORT": {
-      if (position.shortShares < shares) {
-        throw new Error("You do not have enough shorted shares to unshort.");
-      }
+        if (position.shortShares < shares) {
+            throw new Error("You do not have enough shorted shares to unshort.");
+        }
 
-      position.shortShares -= shares;
-      // No immediate cash adjustment. The remaining short position
-      // is settled during the open phase.
-      break;
+        position.shortShares -= shares;
+        // No immediate cash adjustment. The remaining short position is settled during the open phase.
+        break;
     }
   }
 
@@ -1142,13 +1163,32 @@ export function getPlayerView(game, playerId) {
     });
 
     // Clone stock information.
-    const stocks = game.stocks.map(stock => ({
-        ...stock,
+    const stocks = game.stocks.map(stock => {
+        const totalOwnedShares = game.players.reduce(
+            (total, player) => {
+                const position = getPosition(
+                    game,
+                    stock.id,
+                    player.id
+                );
 
-        history: stock.history.map(entry => ({
-            ...entry,
-        })),
-    }));
+                return total + (position?.longShares || 0);
+            },
+            0
+        );
+
+        return {
+            ...stock,
+            sharesOwned: totalOwnedShares,
+            sharesAvailable: Math.max(
+                0,
+                stock.totalShares - totalOwnedShares
+            ),
+            history: stock.history.map(entry => ({
+                ...entry,
+            })),
+        };
+    });
 
     // Build the position board.
     const positionBoard = {};

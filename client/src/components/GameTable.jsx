@@ -154,7 +154,7 @@ export default function GameTable({
             <div className="panel-heading">
               <div>
                 <div className="panel-label">
-                  PORTFOLIO OVERVIEW
+                  PORTFOLIO
                 </div>
               </div>
 
@@ -256,100 +256,9 @@ export default function GameTable({
             </div>
           )} */}
 
-          {/* Turn order */}
+          {/* Turn order or Leaderboard (when market opens) */}
 
-          <div className="panel turn-order-panel">
-            <div className="panel-heading">
-              <div>
-                <div className="panel-label">
-                  TURN ORDER
-                </div>
-              </div>
-
-              <span className="turn-round">
-                {`CYCLE ${cycle}`}
-              </span>
-
-              <span className="turn-round">
-                {isOpen ? "OPEN" : `ROUND ${actionRound} / 3`}
-              </span>
-            </div>
-
-            <div className="turn-order-list">
-              {players.map((player, index) => {
-                const playerIsCurrent =
-                  getPlayerId(player) ===
-                  getPlayerId(currentPlayer);
-
-                return (
-                  <div
-                    className={`turn-order-item ${
-                      playerIsCurrent && !isOpen
-                        ? "active-turn"
-                        : ""
-                    }`}
-                    key={getPlayerId(player) || index}
-                  >
-                    <span className="turn-number">
-                      {index + 1}
-                    </span>
-
-                    <span className="turn-player">
-                      {getPlayerName(player)}
-
-                      {getPlayerId(player) === playerId && (
-                        <small> YOU</small>
-                      )}
-
-                      {player.isOnline && (
-                        <span
-                          className="online-dot"
-                          title="Online"
-                        />
-                      )}
-                    </span>
-
-                    {playerIsCurrent && !isOpen && (
-                      <span className="now-tag">TURN</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* <button
-              className="leave-game-button"
-              onClick={onLeave}
-              disabled={busy}
-            >
-              Leave Game
-            </button> */}
-
-            {isMyTurn && (
-              <button
-                className="pass-button"
-                onClick={() => onAction("PASS")}
-              >
-                <Hand size={15} />
-                <b>Pass turn</b>
-              </button>
-            )}
-          </div>
-
-          {/* Trade ticket */}
-
-          <TradePanel
-            stock={selectedStock}
-            position={myPosition}
-            cash={me?.cash || 0}
-            isMyTurn={isMyTurn}
-            onAction={onAction}
-            busy={busy}
-          />
-
-          {/* Leaderboard appears after open phase */}
-
-          {isOpen && (
+          {isOpen ? (
             <div className="panel open-panel">
               <div className="open-title">
                 <div className="open-icon">
@@ -358,7 +267,7 @@ export default function GameTable({
 
                 <div>
                   <div className="panel-label">
-                    LEADERBOARD
+                    LEADERBOARD (AFTER {cycle} CYCLES)
                   </div>
                 </div>
               </div>
@@ -394,7 +303,96 @@ export default function GameTable({
                 </p>
               )}
             </div>
+          ) : (
+            <div className="panel turn-order-panel">
+              <div className="panel-heading">
+                <div>
+                  <div className="panel-label">
+                    TURN ORDER
+                  </div>
+                </div>
+
+                <span className="turn-round">
+                  {`CYCLE ${cycle}`}
+                </span>
+
+                <span className="turn-round">
+                  {isOpen ? "OPEN" : `ROUND ${actionRound} / 3`}
+                </span>
+              </div>
+
+              <div className="turn-order-list">
+                {players.map((player, index) => {
+                  const playerIsCurrent =
+                    getPlayerId(player) ===
+                    getPlayerId(currentPlayer);
+
+                  return (
+                    <div
+                      className={`turn-order-item ${
+                        playerIsCurrent && !isOpen
+                          ? "active-turn"
+                          : ""
+                      }`}
+                      key={getPlayerId(player) || index}
+                    >
+                      <span className="turn-number">
+                        {index + 1}
+                      </span>
+
+                      <span className="turn-player">
+                        {getPlayerName(player)}
+
+                        {getPlayerId(player) === playerId && (
+                          <small>(YOU)</small>
+                        )}
+
+                        {player.isOnline && (
+                          <span
+                            className="online-dot"
+                            title="Online"
+                          />
+                        )}
+                      </span>
+
+                      {playerIsCurrent && !isOpen && (
+                        <span className="now-tag">TURN</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* <button
+                className="leave-game-button"
+                onClick={onLeave}
+                disabled={busy}
+              >
+                Leave Game
+              </button> */}
+
+              {isMyTurn && (
+                <button
+                  className="pass-button"
+                  onClick={() => onAction("PASS")}
+                >
+                  <Hand size={15} />
+                  <b>Pass turn</b>
+                </button>
+              )}
+            </div>
           )}
+
+          {/* Trade ticket */}
+
+          <TradePanel
+            stock={selectedStock}
+            position={myPosition}
+            cash={me?.cash || 0}
+            isMyTurn={isMyTurn}
+            onAction={onAction}
+            busy={busy}
+          />
 
           {/* Player financial summary */}
 
@@ -404,7 +402,7 @@ export default function GameTable({
                 <Wallet size={15} /> CASH BALANCE
               </span>
 
-              <b>{money(me?.cash || 0)}</b>
+              <tt>{money(me?.cash || 0)}</tt>
             </div>
 
             <div className="stat-card">
@@ -412,7 +410,7 @@ export default function GameTable({
                 <Coins size={15} /> LONG POSITIONS
               </span>
 
-              <b>{money(totalLongValue)}</b>
+              <tt>{money(totalLongValue)}</tt>
             </div>
 
             <div className="stat-card">
@@ -420,7 +418,7 @@ export default function GameTable({
                 <Trophy size={15} /> NET WORTH
               </span>
 
-              <b>{money(myNetWorth)}</b>
+              <tt>{money(myNetWorth)}</tt>
             </div>
           </div>
 
