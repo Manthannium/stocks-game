@@ -57,11 +57,12 @@ export default function PositionBoard({
                   <td key={getPlayerId(player) || index}>
                     <div className="position-cell">
                       <span className="long-position">
-                        {longShares}
+                        {Number(longShares || 0).toLocaleString("en-IN")}
                       </span>
+                      
 
                       <span className="short-position">
-                        {shortShares}
+                        {Number(shortShares || 0).toLocaleString("en-IN")}
                       </span>
                     </div>
                   </td>

@@ -35,7 +35,7 @@ export default function TradePanel({
 
     if (action === "BUY" || action === "SHORT") {
       return stock.price > 0
-        ? Math.max(0, Math.floor(Number(cash || 0) / stock.price))
+        ? Math.min( Math.floor(stock.sharesAvailable), Math.max(0, Math.floor(Number(cash || 0) / stock.price)))
         : 0;
     }
 
@@ -73,143 +73,142 @@ export default function TradePanel({
 
   return (
     <div className="panel trade-panel">
-      <div className="panel-heading">
-        <div>
-          <div className="panel-label">PLACE YOUR TRADE</div>
-          {/* <h3>Trade ticket</h3> */}
+        <div className="panel-heading">
+            <div>
+              <div className="panel-label">PLACE YOUR TRADE</div>
+            </div>
+
+            <span className="price-mini">
+              {money(stock?.price || 0)}
+              <small> / share</small>
+            </span>
         </div>
 
-        <span className="price-mini">
-          {money(stock?.price || 0)}
-          <small> / share</small>
-        </span>
-      </div>
-
-      <div className="action-grid">
-        {ACTIONS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            className={`action-option ${id.toLowerCase()} ${
-              action === id ? "active" : ""
-            }`}
-            onClick={() => selectAction(id)}
-            disabled={!isMyTurn || !stock?.isActive}
-          >
-            <Icon size={16} />
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="quantity-row">
-        <div>
-          <label>QUANTITY</label>
-          {/* <small>Whole shares only</small> */}
+        <div className="action-grid">
+            {ACTIONS.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  className={`action-option ${id.toLowerCase()} ${
+                    action === id ? "active" : ""
+                  }`}
+                  onClick={() => selectAction(id)}
+                  disabled={!isMyTurn || !stock?.isActive}
+                >
+                  <Icon size={16} />
+                  {label}
+                </button>
+            ))}
         </div>
 
-        <div className="quantity-control">
+        <div className="quantity-row">
+          <div>
+            <label>QUANTITY</label>
+            {/* <small>Whole shares only</small> */}
+          </div>
+
+          <div className="quantity-control">
+            <button
+              onClick={() =>
+                setShares((value) => Math.max(1, value - 1))
+              }
+              disabled={!isMyTurn}
+            >
+              <Minus size={14} />
+            </button>
+
+            <input
+              type="number"
+              min="1"
+              max={maxShares || 1}
+              value={shares}
+              onChange={(event) => {
+                const value = Math.floor(
+                  Number(event.target.value) || 1
+                );
+
+                setShares(Math.max(1, value));
+              }}
+              disabled={!isMyTurn}
+            />
+
+            <button
+              onClick={() =>
+                setShares((value) =>
+                  Math.min(Math.max(1, maxShares), value + 1)
+                )
+              }
+              disabled={!isMyTurn || shares >= maxShares}
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="max-row">
+          <span>Available for this action</span>
+
           <button
-            onClick={() =>
-              setShares((value) => Math.max(1, value - 1))
-            }
-            disabled={!isMyTurn}
+            onClick={() => setShares(Math.max(1, maxShares))}
+            disabled={!isMyTurn || maxShares < 1}
           >
-            <Minus size={14} />
-          </button>
-
-          <input
-            type="number"
-            min="1"
-            max={maxShares || 1}
-            value={shares}
-            onChange={(event) => {
-              const value = Math.floor(
-                Number(event.target.value) || 1
-              );
-
-              setShares(Math.max(1, value));
-            }}
-            disabled={!isMyTurn}
-          />
-
-          <button
-            onClick={() =>
-              setShares((value) =>
-                Math.min(Math.max(1, maxShares), value + 1)
-              )
-            }
-            disabled={!isMyTurn || shares >= maxShares}
-          >
-            <Plus size={14} />
+            MAX: {maxShares}
           </button>
         </div>
-      </div>
 
-      <div className="max-row">
-        <span>Available for this action</span>
+        <div className="trade-estimate">
+          <span>
+            {action === "BUY"
+              ? "Estimated cost"
+              : action === "SELL"
+              ? "Estimated proceeds"
+              : "Position value"}
+          </span>
+
+          <b>{money(estimate)}</b>
+        </div>
+
+        {action === "SHORT" && (
+          <p className="trade-note">
+            Short exposure cannot exceed your available cash.
+            Short-sale proceeds are not added to your cash balance.
+          </p>
+        )}
+
+        {action === "UNSHORT" && (
+          <p className="trade-note">
+            Covering reduces your short position. The remaining
+            short position is settled during the market open.
+          </p>
+        )}
 
         <button
-          onClick={() => setShares(Math.max(1, maxShares))}
-          disabled={!isMyTurn || maxShares < 1}
+          className={`primary-button full-button trade-submit ${action.toLowerCase()}`}
+          onClick={submit}
+          disabled={
+            !isMyTurn ||
+            !stock?.isActive ||
+            submitting ||
+            busy ||
+            maxShares < 1 ||
+            shares > maxShares
+          }
         >
-          MAX: {maxShares}
+          {submitting
+            ? "Submitting..."
+            : `${action === "UNSHORT" ? "Cover" : action} ${shares} share${
+                shares === 1 ? "" : "s"
+              }`}
         </button>
+
+        {!isMyTurn && (
+          <p className="turn-warning">It's not your turn yet.</p>
+        )}
+
+        {isMyTurn && maxShares === 0 && (
+          <p className="turn-warning">
+            No shares or buying power available for this action.
+          </p>
+        )}
       </div>
-
-      <div className="trade-estimate">
-        <span>
-          {action === "BUY"
-            ? "Estimated cost"
-            : action === "SELL"
-            ? "Estimated proceeds"
-            : "Position value"}
-        </span>
-
-        <b>{money(estimate)}</b>
-      </div>
-
-      {action === "SHORT" && (
-        <p className="trade-note">
-          Short exposure cannot exceed your available cash.
-          Short-sale proceeds are not added to your cash balance.
-        </p>
-      )}
-
-      {action === "UNSHORT" && (
-        <p className="trade-note">
-          Covering reduces your short position. The remaining
-          short position is settled during the market open.
-        </p>
-      )}
-
-      <button
-        className={`primary-button full-button trade-submit ${action.toLowerCase()}`}
-        onClick={submit}
-        disabled={
-          !isMyTurn ||
-          !stock?.isActive ||
-          submitting ||
-          busy ||
-          maxShares < 1 ||
-          shares > maxShares
-        }
-      >
-        {submitting
-          ? "Submitting..."
-          : `${action === "UNSHORT" ? "Cover" : action} ${shares} share${
-              shares === 1 ? "" : "s"
-            }`}
-      </button>
-
-      {!isMyTurn && (
-        <p className="turn-warning">It's not your turn yet.</p>
-      )}
-
-      {isMyTurn && maxShares === 0 && (
-        <p className="turn-warning">
-          No shares or buying power available for this action.
-        </p>
-      )}
-    </div>
-  );
+    );
 }
