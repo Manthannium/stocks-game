@@ -61,7 +61,7 @@ const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 let totalConnectedPlayers = 0;
 
 // ============================================================================
-// HTTP ENDPOINTS
+// HTTPS ENDPOINTS
 // ============================================================================
 
 app.get("/", (req, res) => {
@@ -73,7 +73,7 @@ app.get("/", (req, res) => {
         endpoints: {
             health: "/health",
             ping: "/ping",
-            socket: "ws://[this-url]",
+            socket: "wss://[this-url]",
         },
 
         author: "Manthan Patel",
