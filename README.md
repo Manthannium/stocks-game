@@ -51,9 +51,18 @@ npm run start
 ```
 
 # Todo
-Game improvement
+UI
+- change style.css with improved UI and theme
+- trade confirmation dialogue
+- show the active (turn) player highlighted in portfolio matrix (to track his change)
+
+Backend
+- Allow admin to config stock settings (or simply shuffle stocks profile)
+
+Features
 - cash redeem option
 - chairman logic and 1 movement card suspend
 - other special cards (to start the closed company)
-- Allow admin to config stock settings (simple shuffle stocks profile)
-- change style.css with improved UI and theme
+
+
+
