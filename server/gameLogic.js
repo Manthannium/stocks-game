@@ -956,11 +956,11 @@ export function resolveOpenPhase(game) {
     }
 
     // rank before market moves
-    const rankeBefore = {};
+    const rankBefore = {};
     [...game.players ]
         .sort((a, b) => snapshot[b.id].netWorth - snapshot[a.id].netWorth)
         .forEach((player, index) => {
-            rankeBefore[player.id] = index + 1;
+            rankBefore[player.id] = index + 1;
     });
 
     // Aggregate movement cards.
@@ -1095,11 +1095,11 @@ export function resolveOpenPhase(game) {
     game.leaderboard = getLeaderboard(game);
 
     // per-player results for the open phase
-    const stockResultById = Objects.fromEntries(
+    const stockResultById = Object.fromEntries(
         stockResults.map(result => [result.stockId, result])
     );
 
-    const PlayerResults = game.players.map(player => {
+    const playerResults = game.players.map(player => {
         const before = snapshot[player.id];
         const after = game.leaderboard.find(entry => entry.playerId === player.id);
         const positions = before.positions.map(item => {
@@ -1118,7 +1118,7 @@ export function resolveOpenPhase(game) {
         });
         const shortPnL = roundMoney(positions.reduce((total, pos) => total + (pos.shortPnL || 0), 0));
         const longPnL = roundMoney(after.holdingsValue - before.holdingsValue);
-        const closedLoss = roundMoney(positions.filter(pos => pos.isClosed).reduce((total, pos) => total + (pos.longPnL || 0), 0));
+        const closedLoss = roundMoney(positions.filter(pos => pos.isClosed).reduce((total, pos) => total + pos.longShares * pos.oldPrice, 0));
         const change = roundMoney(after.netWorth - before.netWorth);
 
         return {
@@ -1129,8 +1129,8 @@ export function resolveOpenPhase(game) {
             cashBefore: before.cash,
             cashAfter: after.cash,
 
-            holdingsValueBefore: before.holdingsValue,
-            holdingsValueAfter: after.holdingsValue,
+            holdingsBefore: before.holdingsValue,
+            holdingsAfter: after.holdingsValue,
 
             rankBefore: rankBefore[player.id],
             rankAfter: after.rank,
@@ -1146,6 +1146,8 @@ export function resolveOpenPhase(game) {
             positions,
         };
     });
+
+    const returnedCards = game.players.flatMap(player => player.cards);
 
     game.deck = shuffleDeck([
         ...game.deck,
@@ -1185,7 +1187,7 @@ export function resolveOpenPhase(game) {
         })),
     });
 
-    for(const result of StockResults) {
+    for(const result of stockResults) {
         if(!result.isClosed) continue;
     
         addLogEntry(game, {
