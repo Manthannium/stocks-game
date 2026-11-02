@@ -56,13 +56,13 @@ export const MAX_PLAYERS = 7;
 export const ACTION_ROUNDS = 3;
 
 export const PLAYER_COLORS = [
-    "#e63946",
-    "#0f2dd4",
     "#f1e508",
+    "#e63946",
+    "#0cd244",
+    "#6ac6e7",
     "#ea9957",
-    "#0fd4e2",
     "#245607",
-    "#8313de",
+    "#aa51f3",
 ];
 
 // Logbook configs
@@ -511,9 +511,12 @@ export function startGame(game) {
     // Randomize player order.
     game.players = shuffleDeck(game.players);
 
+    const totalColors = PLAYER_COLORS.length;
+    const randomOffset = Math.floor(Math.random() * totalColors);
+
     game.players.forEach((player, index) => {
         player.turnOrder = index + 1;
-        player.color = PLAYER_COLORS[index];
+        player.color = PLAYER_COLORS[(index + randomOffset) % totalColors];
     });
 
     // Initialize the position board.

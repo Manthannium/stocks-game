@@ -35,7 +35,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 				</div>
 
 				<h1>
-		  			🏛️ Stocks 
+		  			🏛️ Stocks 🏛️
 		  		<br />
 		  		{/* <span>Stocks</span> */}
 				</h1>
@@ -80,7 +80,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		<div className="hero-ticker">
 		  <span className="ticker-up">▲ PANW +2.4%</span>
 		  <span className="ticker-down">▼ NVDA -0.8%</span>
-		  <span className="ticker-up">▲ NOW +1.2%</span>
+		  <span className="ticker-up">▲ META +1.2%</span>
 		  <span className="ticker-down">▼ MSFT -0.6%</span>
 		</div>
 	  </div>
@@ -96,7 +96,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		  </span>
 		</div>
 
-		<h2>Enter the exchange</h2>
+		<h2> Enter the exchange </h2>
 		<p className="muted">
 		  Create a new game or join an existing game.
 		</p>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
   font-family: 'DM Sans', sans-serif;
@@ -2519,5 +2519,2658 @@ button:disabled {
 
   .footer-note {
     font-size: 9px;
+  }
+}
+
+
+
+/* ============================================================
+   DEVELOPER TERMINAL THEME
+   Dark terminal + market colors + monospace typography
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular',
+    Consolas, 'Liberation Mono', monospace;
+
+  /* Backgrounds */
+  --bg: #000000;
+  --panel: #150d0d;
+  --panel2: #111d17;
+  --panel-hover: #17251d;
+
+  /* Borders */
+  --line: #24382c;
+  --line-light: #345341;
+
+  /* Text */
+  --text: #e2eee6;
+  --muted: #83968a;
+  --muted-dark: #586a5e;
+
+  /* Semantic colors */
+  --green: #35d48a;
+  --green-bright: #6af0a9;
+  --green-dark: #123b29;
+
+  --red: #fb647c;
+  --red-bright: #ff91a2;
+  --red-dark: #421c29;
+
+  --purple: #ae9bff;
+  --purple-dark: #292044;
+
+  --cyan: #55d9ee;
+  --cyan-dark: #10333c;
+
+  --amber: #f3bd58;
+  --amber-dark: #3a2b15;
+}
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  font-family: var(--font-mono) !important;
+}
+
+html {
+  background: var(--bg);
+  scrollbar-color: #344d3c #080e0a;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background-color: var(--bg);
+
+  background-image:
+    linear-gradient(
+      rgba(82, 145, 103, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(82, 145, 103, 0.045) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(38, 110, 65, 0.12),
+      transparent 55%
+    );
+
+  background-size:
+    32px 32px,
+    32px 32px,
+    auto;
+
+  color: var(--text);
+}
+
+button,
+input {
+  font-family: var(--font-mono) !important;
+}
+
+button {
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+::selection {
+  background: rgba(53, 212, 138, 0.3);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080e0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #344d3c;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #52765d;
+}
+
+
+/* ============================================================
+   APP SHELL / HEADER
+   ============================================================ */
+
+.app-shell {
+  background: transparent;
+}
+
+.topbar {
+  background: rgba(7, 13, 9, 0.94);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.brand-button {
+  color: #e9f7ed;
+  letter-spacing: -0.7px;
+  font-weight: 800;
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, #43e695, #159957);
+  color: #06110a;
+  border-radius: 5px;
+  box-shadow: 0 0 18px rgba(53, 212, 138, 0.2);
+}
+
+.brand-accent {
+  color: var(--green);
+}
+
+.room-chip,
+.connection-pill {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.room-chip b {
+  color: var(--green-bright);
+}
+
+.connection-pill {
+  letter-spacing: 0.5px;
+}
+
+.connection-pill i,
+.live-label i,
+.market-live i,
+.phase-chip i,
+.waiting-tag i {
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(53, 212, 138, 0.55);
+}
+
+.connection-pill.disconnected i {
+  background: var(--red);
+  box-shadow: 0 0 10px rgba(251, 100, 124, 0.5);
+}
+
+.connection-pill.connecting i {
+  background: var(--amber);
+  box-shadow: 0 0 10px rgba(243, 189, 88, 0.4);
+}
+
+.footer-note {
+  color: var(--muted-dark);
+  border-top: 1px solid var(--line);
+}
+
+
+/* ============================================================
+   SHARED TYPOGRAPHY
+   ============================================================ */
+
+.eyebrow,
+.section-kicker,
+.panel-label {
+  color: var(--green);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.eyebrow-dot {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text);
+  font-family: var(--font-mono) !important;
+  letter-spacing: -0.8px;
+}
+
+p {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   PANELS AND CARDS
+   ============================================================ */
+
+.panel {
+  background: linear-gradient(
+    145deg,
+    rgba(15, 26, 19, 0.98),
+    rgba(10, 17, 12, 0.99)
+  );
+
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.panel-heading h3 {
+  color: var(--text);
+  letter-spacing: -0.4px;
+}
+
+.panel-heading h3 small {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.primary-button {
+  background: linear-gradient(135deg, #2bc879, #159957);
+  color: #04140a;
+  border: 1px solid #43df91;
+  border-radius: 5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(28, 185, 103, 0.16);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #57e99c, #27bd70);
+  color: #04140a;
+  box-shadow: 0 4px 22px rgba(53, 212, 138, 0.28);
+}
+
+.secondary-button {
+  background: #142019;
+  color: #b8cbbd;
+  border: 1px solid var(--line-light);
+  border-radius: 5px;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #1b3022;
+  border-color: var(--green);
+  color: var(--green-bright);
+}
+
+.back-link {
+  color: var(--muted);
+}
+
+.back-link:hover {
+  color: var(--green-bright);
+}
+
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+
+input,
+select,
+textarea {
+  background: #080e0a;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  caret-color: var(--green);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #526459;
+}
+
+.entry-form input {
+  background: #080e0a;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+.entry-form input:focus,
+.quantity-control input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(53, 212, 138, 0.1);
+}
+
+.entry-form label,
+.quantity-row label {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+.toast {
+  background: #102017;
+  border: 1px solid #29784b;
+  color: #c9f5d7;
+  border-radius: 6px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+}
+
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+
+.hero-copy h1 span,
+.lobby-heading h1 span,
+.game-heading h1 span {
+  color: var(--green);
+}
+
+.hero-subtitle {
+  color: #93a99a;
+}
+
+.feature-icon {
+  background: #12291b;
+  color: var(--green-bright);
+  border: 1px solid #245438;
+  border-radius: 6px;
+}
+
+.hero-features small {
+  color: var(--muted);
+}
+
+.hero-ticker {
+  color: var(--muted);
+}
+
+.ticker-up {
+  color: var(--green);
+}
+
+.ticker-down {
+  color: var(--red);
+}
+
+.entry-card {
+  background: linear-gradient(145deg, #111e15, #0b120d);
+  border: 1px solid var(--line-light);
+  border-radius: 8px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
+}
+
+.entry-symbol {
+  background: #143522;
+  color: var(--green-bright);
+  border: 1px solid #296541;
+  border-radius: 6px;
+}
+
+.live-label {
+  color: var(--green);
+}
+
+.entry-card h2 {
+  color: var(--text);
+}
+
+.segmented {
+  background: #080e0a;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+.segmented button {
+  color: var(--muted);
+  border-radius: 3px;
+}
+
+.segmented button.selected {
+  background: #173622;
+  color: var(--green-bright);
+  box-shadow: inset 0 0 0 1px #31784b;
+}
+
+.entry-foot {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   LOBBY
+   ============================================================ */
+
+.room-code-large {
+  color: var(--green-bright);
+  text-shadow: 0 0 20px rgba(53, 212, 138, 0.12);
+  letter-spacing: 7px;
+}
+
+.invite-divider {
+  background: var(--line);
+}
+
+.invite-tip {
+  color: var(--cyan);
+}
+
+.invite-tip p {
+  color: var(--muted);
+}
+
+.waiting-tag {
+  color: var(--green);
+}
+
+.lobby-player {
+  border-bottom: 1px solid var(--line);
+}
+
+.avatar {
+  border-radius: 5px;
+}
+
+.host-tag {
+  color: var(--amber);
+}
+
+.ready-dot {
+  background: var(--green);
+  box-shadow: 0 0 7px rgba(53, 212, 138, 0.5);
+}
+
+.waiting-message,
+.hint {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   GAME HEADER AND STATUS
+   ============================================================ */
+
+.round-chip,
+.phase-chip,
+.turn-round {
+  background: #14251a;
+  color: var(--green-bright);
+  border: 1px solid #294e35;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.phase-chip {
+  background: #11271e;
+  color: var(--green);
+}
+
+.round-chip {
+  background: #14291b;
+  color: var(--green-bright);
+}
+
+.phase-chip.open {
+  background: var(--purple-dark);
+  color: var(--purple);
+  border-color: #57468b;
+}
+
+.turn-banner {
+  background: #111e15;
+  border: 1px solid var(--line-light);
+  border-left: 3px solid var(--green);
+  border-radius: 6px;
+}
+
+.turn-icon {
+  background: #173622;
+  color: var(--green-bright);
+  border: 1px solid #296541;
+  border-radius: 5px;
+}
+
+.turn-banner small {
+  color: var(--green);
+}
+
+.your-turn-pulse {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+
+/* ============================================================
+   PLAYER STATS
+   ============================================================ */
+
+.stat-card {
+  background: #0e1812;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.stat-card:hover {
+  border-color: var(--line-light);
+}
+
+.stat-card span {
+  color: var(--muted);
+}
+
+.stat-card span svg {
+  color: var(--green);
+}
+
+.stat-card > b {
+  color: var(--text);
+}
+
+.stat-card > b small {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   MARKET
+   ============================================================ */
+
+.section-heading h2 {
+  color: var(--text);
+}
+
+.section-heading h2 small {
+  color: var(--muted);
+}
+
+.market-live {
+  color: var(--green);
+}
+
+.stock-card {
+  background: linear-gradient(145deg, #101c14, #0c140f);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+.stock-card:hover:not(:disabled),
+.stock-card.stock-selected {
+  border-color: var(--green);
+  background: #14281b;
+  box-shadow: 0 0 0 1px rgba(53, 212, 138, 0.12);
+  transform: translateY(-2px);
+}
+
+.stock-logo {
+  border-radius: 4px;
+}
+
+.change-pill {
+  border-radius: 3px;
+  font-size: 9px;
+}
+
+.change-pill.positive {
+  background: #123d29;
+  color: var(--green-bright);
+  border: 1px solid #20643e;
+}
+
+.change-pill.negative {
+  background: #421e29;
+  color: var(--red-bright);
+  border: 1px solid #773142;
+}
+
+.change-pill.neutral {
+  background: #1c2921;
+  color: #a0b2a5;
+  border: 1px solid #34483a;
+}
+
+.stock-name {
+  color: var(--text);
+}
+
+.stock-ticker {
+  color: var(--muted);
+}
+
+.stock-price {
+  color: #e8f7ed;
+}
+
+.stock-move {
+  color: var(--muted);
+}
+
+.positive-text {
+  color: var(--green) !important;
+}
+
+.negative-text {
+  color: var(--red) !important;
+}
+
+.stock-closed {
+  opacity: 0.38;
+}
+
+.closed-stamp {
+  color: var(--red);
+}
+
+
+/* ============================================================
+   STOCK SUPPLY
+   ============================================================ */
+
+.stock-supply {
+  border-top: 1px solid var(--line);
+}
+
+.stock-supply-label {
+  color: var(--muted);
+}
+
+.stock-supply-value {
+  color: var(--green);
+}
+
+.stock-supply-total {
+  color: var(--muted-dark);
+}
+
+
+/* ============================================================
+   POSITION BOARD
+   ============================================================ */
+
+.legend {
+  color: var(--muted);
+}
+
+.legend-long {
+  background: var(--green);
+}
+
+.legend-short {
+  background: var(--red);
+}
+
+.position-table th {
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.position-table td {
+  color: #c6d7cb;
+  border-bottom: 1px solid #1c2b21;
+}
+
+.table-stock span {
+  color: var(--text);
+}
+
+.table-stock small {
+  color: var(--muted);
+}
+
+.long-position {
+  color: var(--green-bright);
+  background: #123b28;
+  border: 1px solid #205c3b;
+  border-radius: 3px;
+}
+
+.short-position {
+  color: var(--red-bright);
+  background: #421e29;
+  border: 1px solid #713142;
+  border-radius: 3px;
+}
+
+
+/* ============================================================
+   PRIVATE MOVEMENT CARDS
+   ============================================================ */
+
+.private-tag {
+  color: var(--purple);
+}
+
+.hand-card {
+  background: linear-gradient(145deg, #17251b, #0d1711);
+  border: 1px solid #395744;
+  border-radius: 6px;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.hand-card:hover {
+  border-color: #6b9a77;
+  transform: translateY(-4px);
+}
+
+.card-positive {
+  border-top: 2px solid var(--green);
+}
+
+.card-negative {
+  border-top: 2px solid var(--red);
+}
+
+.hand-card-top {
+  color: #a8bcae;
+}
+
+.card-movement {
+  color: var(--green-bright);
+}
+
+.card-negative .card-movement {
+  color: var(--red-bright);
+}
+
+.card-caption {
+  color: var(--muted);
+}
+
+.card-bottom {
+  color: #91a397;
+}
+
+.empty-hand {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   SELECTED STOCK PANEL AND MINI CHART
+   ============================================================ */
+
+.selected-stock-panel {
+  background: linear-gradient(145deg, #14251a, #0d1711);
+  border: 1px solid #345b40;
+  border-radius: 7px;
+}
+
+.selected-stock-title b {
+  color: var(--text);
+}
+
+.selected-stock-title small {
+  color: var(--muted);
+}
+
+.selected-price {
+  color: var(--green-bright);
+}
+
+.mini-chart {
+  border-bottom: 1px solid var(--line-light);
+}
+
+.chart-bar {
+  background: linear-gradient(
+    180deg,
+    #53e99c,
+    #16884e
+  );
+}
+
+.chart-empty {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   TRADE TICKET
+   ============================================================ */
+
+.price-mini {
+  color: var(--green-bright);
+}
+
+.price-mini small {
+  color: var(--muted);
+}
+
+.action-option {
+  background: #0c1610;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: #9cb0a1;
+}
+
+.action-option:hover {
+  background: #16251a;
+  border-color: var(--line-light);
+  color: var(--text);
+}
+
+.action-option.active {
+  background: var(--purple-dark);
+  border-color: #7665b5;
+  color: #d4caff;
+}
+
+.action-option.buy.active {
+  background: #123b28;
+  border-color: #2b9e61;
+  color: var(--green-bright);
+}
+
+.action-option.short.active {
+  background: #421e29;
+  border-color: #b94d65;
+  color: var(--red-bright);
+}
+
+.quantity-control {
+  background: #080e0a;
+  border: 1px solid var(--line-light);
+  border-radius: 5px;
+}
+
+.quantity-control button {
+  color: var(--text-secondary, #b0c1b5);
+}
+
+.quantity-control button:hover {
+  background: #1a3020;
+  color: var(--green-bright);
+}
+
+.quantity-control input {
+  color: var(--text);
+}
+
+.quantity-row small {
+  color: var(--muted);
+}
+
+.max-row {
+  color: var(--muted);
+}
+
+.max-row button {
+  color: var(--green);
+}
+
+.max-row button:hover {
+  color: var(--green-bright);
+}
+
+.trade-estimate {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.trade-estimate b {
+  color: var(--text);
+}
+
+.trade-note {
+  background: #17251e;
+  color: #a9cbb4;
+  border: 1px solid #2a4b36;
+  border-radius: 4px;
+}
+
+.trade-submit {
+  background: linear-gradient(135deg, #2bc879, #159957);
+  border: 1px solid #43df91;
+  border-radius: 5px;
+  color: #04140a;
+  font-weight: 800;
+}
+
+.trade-submit:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.trade-submit.sell {
+  background: linear-gradient(135deg, #15849a, #116477);
+  border-color: #40c9dc;
+  color: #e7fcff;
+}
+
+.trade-submit.short {
+  background: linear-gradient(135deg, #c44863, #8c2d48);
+  border-color: #ed7189;
+  color: #fff0f3;
+}
+
+.trade-submit.unshort {
+  background: linear-gradient(135deg, #7963ce, #55449f);
+  border-color: #a997ff;
+  color: #ffffff;
+}
+
+.turn-warning {
+  color: var(--amber);
+}
+
+
+/* ============================================================
+   TURN ORDER
+   ============================================================ */
+
+.turn-number {
+  background: #1a2a1e;
+  color: #a8c5af;
+  border: 1px solid #314d38;
+  border-radius: 4px;
+}
+
+.turn-player {
+  color: var(--text);
+}
+
+.turn-player small {
+  color: var(--purple);
+}
+
+.online-dot {
+  background: var(--green);
+  box-shadow: 0 0 7px rgba(53, 212, 138, 0.55);
+}
+
+.leave-game-button {
+  border: 1px solid rgba(251, 100, 124, 0.4);
+  border-radius: 5px;
+  background: rgba(251, 100, 124, 0.08);
+  color: var(--red);
+}
+
+.leave-game-button:hover {
+  background: rgba(251, 100, 124, 0.17);
+  border-color: var(--red);
+}
+
+.active-turn .turn-number {
+  background: #183d27;
+  color: var(--green-bright);
+  border-color: var(--green);
+}
+
+.active-turn .turn-player {
+  color: var(--green-bright);
+}
+
+.now-tag {
+  color: var(--green);
+}
+
+.pass-button {
+  background: #202b24;
+  border: 1px solid #44584a;
+  border-radius: 5px;
+  color: #d1e0d5;
+}
+
+.pass-button:hover:not(:disabled) {
+  background: #2a3d30;
+  border-color: var(--green);
+  color: var(--green-bright);
+}
+
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+
+.open-panel {
+  border-color: #6855a8;
+  background: linear-gradient(145deg, #171426, #0e1410);
+}
+
+.open-icon {
+  background: #2b2045;
+  color: var(--purple);
+  border: 1px solid #594588;
+  border-radius: 6px;
+}
+
+.open-title h3 {
+  color: var(--text);
+}
+
+.leader-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.rank-medal {
+  color: var(--muted);
+}
+
+.rank-1 {
+  color: var(--amber);
+}
+
+.rank-2 {
+  color: #c3d3ca;
+}
+
+.rank-3 {
+  color: #d99a72;
+}
+
+.leader-name {
+  color: #d0dfd5;
+}
+
+.leader-name small {
+  color: var(--purple);
+}
+
+.leader-worth {
+  color: var(--green-bright);
+}
+
+.you-row .leader-name {
+  color: var(--green-bright);
+}
+
+
+/* ============================================================
+   COLLAPSIBLE PANELS
+   ============================================================ */
+
+.collapsible-chevron {
+  color: var(--muted);
+}
+
+.collapsible-header:hover .collapsible-chevron {
+  color: var(--green);
+}
+
+
+/* ============================================================
+   TRADE PANEL ADDITIONS
+   ============================================================ */
+
+.your-turn-tag {
+  color: var(--green);
+}
+
+.your-turn-tag i {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+.trade-stock-row {
+  background: #0c1610;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+.trade-stock-name b {
+  color: var(--text);
+}
+
+.trade-stock-name small {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   LOGBOOK
+   ============================================================ */
+
+.log-count,
+.log-unread {
+  border-radius: 4px;
+}
+
+.log-count {
+  color: var(--muted);
+  background: #1a2920;
+  border: 1px solid var(--line);
+}
+
+.log-unread {
+  color: #06120a;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(53, 212, 138, 0.2);
+}
+
+.logbook-list {
+  scrollbar-color: #344d3c transparent;
+}
+
+.logbook-empty {
+  color: var(--muted);
+}
+
+.log-entry {
+  background: #0d1711;
+  border: 1px solid #203428;
+  border-left: 2px solid #496050;
+  border-radius: 5px;
+}
+
+.log-meta {
+  color: var(--muted-dark);
+}
+
+.log-text {
+  color: #c7d9cc;
+}
+
+.log-ticker {
+  color: var(--green-bright);
+  background: #153420;
+  border-radius: 3px;
+}
+
+.log-amount {
+  color: #9ab0a0;
+}
+
+.log-buy,
+.log-gain {
+  border-left-color: var(--green);
+}
+
+.log-sell {
+  border-left-color: var(--cyan);
+}
+
+.log-short,
+.log-closed,
+.log-loss {
+  border-left-color: var(--red);
+}
+
+.log-unshort {
+  border-left-color: var(--purple);
+}
+
+.log-pass {
+  border-left-color: #53645a;
+}
+
+.log-system {
+  border-left-color: var(--purple);
+  background: #171426;
+}
+
+.log-market {
+  border-left-color: var(--amber);
+  background: #211b10;
+}
+
+.log-move-chip {
+  border-radius: 3px;
+}
+
+.log-move-chip.positive {
+  background: #123d29;
+  color: var(--green-bright);
+}
+
+.log-move-chip.negative {
+  background: #421e29;
+  color: var(--red-bright);
+}
+
+.log-move-chip.neutral {
+  background: #1c2921;
+  color: #a0b2a5;
+}
+
+.log-move-chip.closed {
+  background: #421e29;
+  color: var(--red-bright);
+}
+
+
+/* ============================================================
+   MARKET OPEN DIALOG
+   ============================================================ */
+
+.mo-overlay {
+  background: rgba(2, 7, 4, 0.84);
+  backdrop-filter: blur(7px);
+}
+
+.mo-dialog {
+  background: linear-gradient(145deg, #111e15, #0a120d);
+  border: 1px solid #3b6948;
+  border-radius: 9px;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(53, 212, 138, 0.04);
+}
+
+.mo-header {
+  border-bottom: 1px solid var(--line);
+}
+
+.mo-header-text h2 {
+  color: var(--text);
+}
+
+.mo-chip-closed {
+  background: var(--red-dark);
+  color: var(--red-bright);
+}
+
+.mo-muted {
+  color: var(--muted);
+}
+
+.mo-tile {
+  background: #0e1812;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+
+.mo-tile span {
+  color: var(--muted);
+}
+
+.mo-tile span svg {
+  color: var(--green);
+}
+
+.mo-tile b {
+  color: var(--text);
+}
+
+.mo-tile small {
+  color: var(--muted);
+}
+
+
+/* ============================================================
+   MARKET OPEN TABLES
+   ============================================================ */
+
+.mo-table-wrap {
+  background: #0b140e;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.mo-table th {
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.mo-table td {
+  color: #c8d9cd;
+  border-bottom: 1px solid #1d2b21;
+}
+
+.mo-row-you td {
+  background: #142b1a;
+}
+
+.mo-stock-cell b,
+.mo-player-cell {
+  color: var(--text);
+}
+
+.mo-stock-cell small {
+  color: var(--muted);
+}
+
+.mo-player-cell small {
+  color: var(--purple);
+}
+
+.mo-status {
+  border-radius: 3px;
+}
+
+.mo-status.up {
+  background: #123d29;
+  color: var(--green-bright);
+}
+
+.mo-status.down {
+  background: #421e29;
+  color: var(--red-bright);
+}
+
+.mo-status.flat {
+  background: #1c2921;
+  color: #a0b2a5;
+}
+
+.mo-status.closed {
+  background: #421e29;
+  color: var(--red-bright);
+}
+
+.mo-delta.positive {
+  color: var(--green);
+}
+
+.mo-delta.negative {
+  color: var(--red);
+}
+
+.mo-delta.neutral {
+  color: #a0b2a5;
+}
+
+
+/* ============================================================
+   REVEALED HANDS
+   ============================================================ */
+
+.mo-hands {
+  background: #0b140e;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.mo-hands-chevron {
+  color: var(--muted);
+}
+
+.mo-hand-row {
+  border-top: 1px solid var(--line);
+}
+
+.mo-card-chip {
+  border-radius: 3px;
+}
+
+.mo-card-chip.positive {
+  background: #123d29;
+  color: var(--green-bright);
+}
+
+.mo-card-chip.negative {
+  background: #421e29;
+  color: var(--red-bright);
+}
+
+.mo-card-chip.neutral {
+  background: #1c2921;
+  color: #a0b2a5;
+}
+
+
+/* ============================================================
+   MARKET OPEN LEADERBOARD / PLAYER RESULT
+   ============================================================ */
+
+.mo-card {
+  background: #0e1812;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.mo-rank-change.up {
+  color: var(--green);
+}
+
+.mo-rank-change.down {
+  color: var(--red);
+}
+
+.mo-rank-change.flat {
+  color: var(--muted);
+}
+
+.mo-you {
+  border-color: #326a43;
+  background: linear-gradient(145deg, #14291a, #0d1711);
+}
+
+.mo-you-headline {
+  color: var(--text);
+}
+
+.mo-you-caption {
+  color: var(--muted);
+}
+
+.mo-you-row {
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.mo-you-row b {
+  color: var(--text);
+}
+
+.mo-you-row > span:first-child {
+  color: var(--muted);
+}
+
+.mo-breakdown li {
+  background: #0c1610;
+  border: 1px solid #203428;
+  border-radius: 4px;
+  color: #9caf9f;
+}
+
+.mo-breakdown-stock {
+  color: var(--text);
+}
+
+.mo-breakdown-stock em {
+  color: var(--red-bright);
+  background: var(--red-dark);
+}
+
+.mo-warning {
+  background: #421e29;
+  color: var(--red-bright);
+  border: 1px solid #773142;
+  padding: 9px;
+  border-radius: 4px;
+}
+
+
+/* ============================================================
+   MARKET OPEN FOOTER
+   ============================================================ */
+
+.mo-footer {
+  border-top: 1px solid var(--line);
+  background: #0a130d;
+}
+
+.mo-footer-info {
+  color: var(--muted);
+}
+
+.mo-waiting {
+  color: var(--purple);
+}
+
+.mo-waiting i {
+  background: var(--purple);
+  box-shadow: 0 0 10px var(--purple);
+}
+
+
+/* ============================================================
+   RESPONSIVE FINISHING TOUCHES
+   Keep the existing media queries and layout breakpoints.
+   ============================================================ */
+
+@media (max-width: 800px) {
+  .mo-dialog {
+    border-radius: 7px;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar {
+    background: rgba(7, 13, 9, 0.98);
+  }
+
+  .hand-card {
+    border-radius: 5px;
+  }
+
+  .panel {
+    border-radius: 6px;
+  }
+}
+
+
+/* ============================================================
+   THEME REFINEMENT
+   Charcoal + Silver + White + Selective Market Colors
+   Append AFTER the previous terminal theme
+   ============================================================ */
+
+:root {
+  --bg: #090b0a;
+  --panel: #101211;
+  --panel2: #171a18;
+  --panel-hover: #202421;
+
+  --line: #292e2b;
+  --line-light: #3b423e;
+
+  --text: #e8ece9;
+  --muted: #a0aaa3;
+  --muted-dark: #69746d;
+
+  /* Keep semantic colors */
+  --green: #35d48a;
+  --green-bright: #6af0a9;
+  --green-dark: #123b29;
+
+  --red: #fb647c;
+  --red-bright: #ff91a2;
+  --red-dark: #421c29;
+
+  --purple: #ae9bff;
+  --purple-dark: #292044;
+
+  --cyan: #55d9ee;
+  --amber: #f3bd58;
+}
+
+
+/* ============================================================
+   BACKGROUND
+   Remove the excessive green tint
+   ============================================================ */
+
+body {
+  background-color: var(--bg);
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(255, 255, 255, 0.035),
+      transparent 55%
+    );
+
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+
+/* ============================================================
+   HEADER AND BRANDING
+   ============================================================ */
+
+.topbar {
+  background: rgba(9, 11, 10, 0.96);
+  border-bottom: 1px solid #292e2b;
+}
+
+.brand-button {
+  color: #f1f3f1;
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, #ffffff, #bfc6c1);
+  color: #090b0a;
+  box-shadow: none;
+}
+
+.brand-accent {
+  color: #ffffff;
+}
+
+.room-chip b {
+  color: #ffffff;
+}
+
+.connection-pill {
+  color: #b2bbb5;
+}
+
+
+/* ============================================================
+   GENERAL TYPOGRAPHY
+   ============================================================ */
+
+.eyebrow,
+.section-kicker,
+.panel-label {
+  color: #aeb8b1;
+}
+
+.eyebrow-dot {
+  background: #c5cec8;
+  box-shadow: 0 0 7px rgba(255,255,255,0.2);
+}
+
+.muted {
+  color: #9ca69f;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #edf0ee;
+}
+
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.panel {
+  background: linear-gradient(
+    145deg,
+    #141715,
+    #0e110f
+  );
+
+  border-color: #2b302d;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+.panel:hover {
+  border-color: #3b423e;
+}
+
+.panel-heading h3 {
+  color: #e8ece9;
+}
+
+.panel-heading h3 small {
+  color: #929c95;
+}
+
+
+/* ============================================================
+   PRIMARY AND SECONDARY BUTTONS
+   General buttons are now silver instead of green
+   ============================================================ */
+
+.primary-button {
+  background: linear-gradient(135deg, #eeeeee, #c5cbc7);
+  color: #101310;
+  border: 1px solid #ffffff;
+  box-shadow: none;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #ffffff;
+  color: #080b09;
+  box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+.secondary-button {
+  background: #1a1e1b;
+  color: #d0d7d2;
+  border: 1px solid #414943;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #252b27;
+  border-color: #aab3ad;
+  color: #ffffff;
+}
+
+.back-link {
+  color: #a3ada6;
+}
+
+.back-link:hover {
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   INPUTS AND FORMS
+   ============================================================ */
+
+input,
+select,
+textarea {
+  background: #0b0e0c;
+  color: #e8ece9;
+  border-color: #343b36;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #aab4ad;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+}
+
+.entry-form input {
+  background: #0b0e0c;
+  border-color: #343b36;
+}
+
+.entry-form input:focus,
+.quantity-control input:focus {
+  border-color: #c0c9c3;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #68736b;
+}
+
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+
+.hero-copy h1 span,
+.lobby-heading h1 span,
+.game-heading h1 span {
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  color: #a3ada6;
+}
+
+.feature-icon {
+  background: #202521;
+  color: #e1e8e3;
+  border: 1px solid #3a423c;
+}
+
+.hero-features small {
+  color: #909b93;
+}
+
+.hero-ticker {
+  color: #a0aaa3;
+}
+
+/* Keep real market movement colors */
+.ticker-up {
+  color: var(--green);
+}
+
+.ticker-down {
+  color: var(--red);
+}
+
+.entry-card {
+  background: linear-gradient(145deg, #171b18, #0e110f);
+  border-color: #363d38;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.35);
+}
+
+.entry-symbol {
+  background: #252a26;
+  color: #f0f3f0;
+  border: 1px solid #464e48;
+}
+
+.entry-card h2 {
+  color: #ffffff;
+}
+
+.live-label {
+  color: #b9c6bd;
+}
+
+.segmented {
+  background: #0b0e0c;
+  border-color: #343b36;
+}
+
+.segmented button {
+  color: #9ca69f;
+}
+
+.segmented button.selected {
+  background: #252b27;
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px #626d65;
+}
+
+.entry-foot {
+  border-color: #303732;
+  color: #929c95;
+}
+
+
+/* ============================================================
+   LOBBY
+   ============================================================ */
+
+.room-code-large {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+.invite-tip {
+  color: #d6ded8;
+}
+
+.invite-tip p {
+  color: #9da79f;
+}
+
+.waiting-tag {
+  color: #c3cdc6;
+}
+
+.lobby-player {
+  border-color: #2c332e;
+}
+
+.player-name {
+  color: #e0e6e1;
+}
+
+.host-tag {
+  color: var(--amber);
+}
+
+.waiting-message,
+.hint {
+  color: #9ca69f;
+}
+
+
+/* ============================================================
+   GAME STATUS
+   ============================================================ */
+
+.round-chip,
+.phase-chip,
+.turn-round {
+  background: #202521;
+  color: #d7dfd9;
+  border: 1px solid #424b45;
+}
+
+/* Green dot communicates live status, not the entire chip */
+.round-chip i,
+.phase-chip i {
+  background: var(--green);
+  box-shadow: 0 0 7px rgba(53,212,138,0.4);
+}
+
+.round-chip {
+  color: #e5eae6;
+}
+
+.phase-chip {
+  color: #d7dfd9;
+}
+
+.phase-chip.open {
+  background: #292044;
+  border-color: #57468b;
+  color: #d1c4ff;
+}
+
+.turn-banner {
+  background: #171c18;
+  border: 1px solid #3b443e;
+  border-left: 3px solid #aab4ad;
+}
+
+.turn-icon {
+  background: #252a26;
+  color: #e4e9e5;
+  border: 1px solid #454e47;
+}
+
+.turn-banner small {
+  color: #bec8c1;
+}
+
+.your-turn-pulse {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(53,212,138,0.5);
+}
+
+
+/* ============================================================
+   STAT CARDS
+   ============================================================ */
+
+.stat-card {
+  background: #121613;
+  border-color: #303833;
+}
+
+.stat-card:hover {
+  border-color: #555f58;
+}
+
+.stat-card span {
+  color: #a0aaa3;
+}
+
+.stat-card span svg {
+  color: #c3ccc6;
+}
+
+.stat-card > b {
+  color: #f0f3f0;
+}
+
+.stat-card > b small {
+  color: #929c95;
+}
+
+
+/* ============================================================
+   MARKET STOCK CARDS
+   ============================================================ */
+
+.stock-card {
+  background: linear-gradient(145deg, #151a16, #101411);
+  border-color: #303833;
+  color: #e8ece9;
+}
+
+.stock-card:hover:not(:disabled) {
+  border-color: #8b968e;
+  background: #1c221e;
+}
+
+.stock-card.stock-selected {
+  border-color: var(--purple);
+  background: #201d2b;
+  box-shadow: 0 0 0 1px rgba(174,155,255,0.12);
+}
+
+.stock-name {
+  color: #e9eeea;
+}
+
+.stock-ticker {
+  color: #929d95;
+}
+
+.stock-price {
+  color: #ffffff;
+}
+
+.stock-move {
+  color: #a1aaa4;
+}
+
+/* Keep market movement green and red */
+.change-pill.positive {
+  background: #123d29;
+  color: #6af0a9;
+  border-color: #20643e;
+}
+
+.change-pill.negative {
+  background: #421e29;
+  color: #ff91a2;
+  border-color: #773142;
+}
+
+.change-pill.neutral {
+  background: #252b27;
+  color: #b5beb8;
+  border-color: #414a44;
+}
+
+.positive-text {
+  color: var(--green) !important;
+}
+
+.negative-text {
+  color: var(--red) !important;
+}
+
+.closed-stamp {
+  color: var(--red);
+}
+
+
+/* ============================================================
+   POSITION BOARD
+   ============================================================ */
+
+.legend {
+  color: #a3ada6;
+}
+
+.position-table th {
+  color: #a5afa8;
+  border-color: #343b36;
+}
+
+.position-table td {
+  color: #d0d9d2;
+  border-color: #262d28;
+}
+
+.table-stock span {
+  color: #e5eae6;
+}
+
+.table-stock small {
+  color: #929c95;
+}
+
+/* Long = green, Short = red */
+.long-position {
+  color: #6af0a9;
+  background: #123b29;
+  border-color: #20643e;
+}
+
+.short-position {
+  color: #ff91a2;
+  background: #421e29;
+  border-color: #773142;
+}
+
+
+/* ============================================================
+   MOVEMENT CARDS
+   ============================================================ */
+
+.private-tag {
+  color: #c3b7ff;
+}
+
+.hand-card {
+  background: linear-gradient(145deg, #1d241f, #111612);
+  border-color: #414b44;
+}
+
+.hand-card:hover {
+  border-color: #aab5ad;
+}
+
+/* Retain semantic card edges */
+.card-positive {
+  border-top-color: var(--green);
+}
+
+.card-negative {
+  border-top-color: var(--red);
+}
+
+.hand-card-top {
+  color: #cbd4ce;
+}
+
+.card-movement {
+  color: var(--green-bright);
+}
+
+.card-negative .card-movement {
+  color: var(--red-bright);
+}
+
+.card-caption,
+.card-bottom {
+  color: #929c95;
+}
+
+
+/* ============================================================
+   SELECTED STOCK PANEL
+   ============================================================ */
+
+.selected-stock-panel {
+  background: linear-gradient(145deg, #191e1a, #101511);
+  border-color: #444d46;
+}
+
+.selected-stock-title b {
+  color: #f0f3f0;
+}
+
+.selected-stock-title small {
+  color: #9ca69f;
+}
+
+.selected-price {
+  color: #f0f3f0;
+}
+
+.mini-chart {
+  border-color: #414a44;
+}
+
+.chart-bar {
+  background: linear-gradient(
+    180deg,
+    #bcb0ff,
+    #6957bc
+  );
+}
+
+
+/* ============================================================
+   TRADE TICKET
+   ============================================================ */
+
+.price-mini {
+  color: #f0f3f0;
+}
+
+.price-mini small {
+  color: #929c95;
+}
+
+.action-option {
+  background: #121713;
+  border-color: #303833;
+  color: #adb8b0;
+}
+
+.action-option:hover {
+  background: #202521;
+  border-color: #69756d;
+  color: #ffffff;
+}
+
+.action-option.active {
+  background: #292044;
+  border-color: #7665b5;
+  color: #d9d0ff;
+}
+
+/* BUY remains green */
+.action-option.buy.active {
+  background: #123b29;
+  border-color: #2b9e61;
+  color: #6af0a9;
+}
+
+/* SHORT remains red */
+.action-option.short.active {
+  background: #421e29;
+  border-color: #b94d65;
+  color: #ff91a2;
+}
+
+.quantity-control {
+  background: #0a0e0b;
+  border-color: #414a44;
+}
+
+.quantity-control button {
+  color: #d3dcd5;
+}
+
+.quantity-control button:hover {
+  background: #252c27;
+  color: #ffffff;
+}
+
+.quantity-control input {
+  color: #ffffff;
+}
+
+.quantity-row small {
+  color: #88948c;
+}
+
+.max-row {
+  color: #9ca69f;
+}
+
+.max-row button {
+  color: #d4dcd6;
+}
+
+.max-row button:hover {
+  color: #ffffff;
+}
+
+.trade-estimate {
+  border-color: #343b36;
+  color: #aab4ad;
+}
+
+.trade-estimate b {
+  color: #ffffff;
+}
+
+.trade-note {
+  background: #1b2025;
+  border: 1px solid #414956;
+  color: #c2ccd4;
+}
+
+/* BUY action */
+.trade-submit {
+  background: linear-gradient(135deg, #29c77a, #159957);
+  border-color: #43df91;
+  color: #04140a;
+}
+
+/* SELL action */
+.trade-submit.sell {
+  background: linear-gradient(135deg, #247e98, #17566c);
+  border-color: #40c9dc;
+  color: #ffffff;
+}
+
+/* SHORT action */
+.trade-submit.short {
+  background: linear-gradient(135deg, #c44863, #8c2d48);
+  border-color: #ed7189;
+  color: #ffffff;
+}
+
+/* UNSHORT action */
+.trade-submit.unshort {
+  background: linear-gradient(135deg, #7963ce, #55449f);
+  border-color: #a997ff;
+  color: #ffffff;
+}
+
+.turn-warning {
+  color: var(--amber);
+}
+
+
+/* ============================================================
+   TURN ORDER AND ONLINE STATUS
+   ============================================================ */
+
+.turn-number {
+  background: #252b27;
+  color: #d4ddd6;
+  border-color: #454e47;
+}
+
+.turn-player {
+  color: #dce4de;
+}
+
+.turn-player small {
+  color: #c3b7ff;
+}
+
+/* Small green indicator for online status */
+.online-dot {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(53,212,138,0.45);
+}
+
+.active-turn .turn-number {
+  background: #282044;
+  color: #d4caff;
+  border-color: #7665b5;
+}
+
+.active-turn .turn-player {
+  color: #e4dcff;
+}
+
+.now-tag {
+  color: var(--green);
+}
+
+.pass-button {
+  background: #202521;
+  border-color: #465149;
+  color: #e1e8e2;
+}
+
+.pass-button:hover:not(:disabled) {
+  background: #303832;
+  border-color: #aab5ad;
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+
+.open-panel {
+  border-color: #57468b;
+  background: linear-gradient(145deg, #191627, #101310);
+}
+
+.open-icon {
+  background: #292044;
+  color: #c6b8ff;
+  border-color: #594588;
+}
+
+.open-title h3 {
+  color: #f0f3f0;
+}
+
+.leader-row {
+  border-color: #303833;
+}
+
+.rank-medal {
+  color: #a0aaa3;
+}
+
+.rank-1 {
+  color: var(--amber);
+}
+
+.rank-2 {
+  color: #d5ded8;
+}
+
+.rank-3 {
+  color: #d99a72;
+}
+
+.leader-name {
+  color: #e1e7e2;
+}
+
+.leader-name small {
+  color: #c3b7ff;
+}
+
+.leader-worth {
+  color: #f0f3f0;
+}
+
+.you-row .leader-name {
+  color: #ffffff;
+}
+
+
+/* ============================================================
+   LOGBOOK
+   ============================================================ */
+
+.log-count {
+  background: #252b27;
+  color: #c2ccc5;
+  border-color: #414a44;
+}
+
+.log-unread {
+  background: #eeeeee;
+  color: #111511;
+  box-shadow: none;
+}
+
+.log-entry {
+  background: #121713;
+  border-color: #2c342e;
+  border-left-color: #68746b;
+}
+
+.log-meta {
+  color: #849087;
+}
+
+.log-text {
+  color: #d0d9d2;
+}
+
+.log-ticker {
+  background: #262c28;
+  color: #e8eee9;
+}
+
+.log-amount {
+  color: #a9b4ac;
+}
+
+/* Keep action semantics */
+.log-buy,
+.log-gain {
+  border-left-color: var(--green);
+}
+
+.log-short,
+.log-closed,
+.log-loss {
+  border-left-color: var(--red);
+}
+
+.log-sell {
+  border-left-color: var(--cyan);
+}
+
+.log-unshort {
+  border-left-color: var(--purple);
+}
+
+.log-pass {
+  border-left-color: #68746b;
+}
+
+.log-system {
+  background: #191627;
+  border-left-color: var(--purple);
+}
+
+.log-market {
+  background: #211b10;
+  border-left-color: var(--amber);
+}
+
+
+/* ============================================================
+   MARKET OPEN DIALOG
+   ============================================================ */
+
+.mo-dialog {
+  background: linear-gradient(145deg, #151a16, #0d110e);
+  border-color: #414b44;
+}
+
+.mo-header {
+  border-color: #303833;
+}
+
+.mo-header-text h2 {
+  color: #ffffff;
+}
+
+.mo-tile {
+  background: #121713;
+  border-color: #303833;
+}
+
+.mo-tile span {
+  color: #a0aaa3;
+}
+
+.mo-tile span svg {
+  color: #d1d9d3;
+}
+
+.mo-tile b {
+  color: #edf0ee;
+}
+
+.mo-tile small {
+  color: #9ca69f;
+}
+
+.mo-table-wrap {
+  background: #0d120f;
+  border-color: #303833;
+}
+
+.mo-table th {
+  color: #a0aaa3;
+  border-color: #303833;
+}
+
+.mo-table td {
+  color: #d2dbd5;
+  border-color: #242c26;
+}
+
+.mo-row-you td {
+  background: #20232e;
+}
+
+.mo-player-cell {
+  color: #e1e7e2;
+}
+
+.mo-player-cell small {
+  color: #c3b7ff;
+}
+
+/* Positive and negative outcomes stay colored */
+.mo-status.up,
+.mo-card-chip.positive {
+  background: #123d29;
+  color: #6af0a9;
+}
+
+.mo-status.down,
+.mo-card-chip.negative {
+  background: #421e29;
+  color: #ff91a2;
+}
+
+.mo-status.flat,
+.mo-card-chip.neutral {
+  background: #252b27;
+  color: #c2ccc5;
+}
+
+.mo-status.closed {
+  background: #421e29;
+  color: #ff91a2;
+}
+
+.mo-delta.positive {
+  color: var(--green);
+}
+
+.mo-delta.negative {
+  color: var(--red);
+}
+
+.mo-delta.neutral {
+  color: #c2ccc5;
+}
+
+
+/* ============================================================
+   RESULT CARDS
+   ============================================================ */
+
+.mo-card {
+  background: #121713;
+  border-color: #303833;
+}
+
+.mo-you {
+  background: linear-gradient(145deg, #1c202a, #111512);
+  border-color: #62568a;
+}
+
+.mo-you-headline {
+  color: #ffffff;
+}
+
+.mo-you-caption {
+  color: #a0aaa3;
+}
+
+.mo-you-row {
+  color: #a0aaa3;
+  border-color: #303833;
+}
+
+.mo-you-row b {
+  color: #f0f3f0;
+}
+
+.mo-you-row > span:first-child {
+  color: #929c95;
+}
+
+.mo-breakdown li {
+  background: #0e1310;
+  border-color: #2b332d;
+  color: #b8c3bb;
+}
+
+.mo-breakdown-stock {
+  color: #e8ece9;
+}
+
+.mo-warning {
+  background: #421e29;
+  color: #ff91a2;
+  border-color: #773142;
+}
+
+
+/* ============================================================
+   DIALOG FOOTER
+   ============================================================ */
+
+.mo-footer {
+  background: #0c100d;
+  border-color: #303833;
+}
+
+.mo-footer-info {
+  color: #a0aaa3;
+}
+
+.mo-waiting {
+  color: #d0c5ff;
+}
+
+.mo-waiting i {
+  background: var(--purple);
+  box-shadow: 0 0 8px rgba(174,155,255,0.45);
+}
+
+/* ============================================================
+   FINAL DETAIL
+   ============================================================ */
+
+hr {
+  border-color: #303833;
+}
+
+:disabled {
+  filter: saturate(0.5);
+}
+
+@media (max-width: 800px) {
+  .panel,
+  .entry-card,
+  .stock-card {
+    box-shadow: none;
   }
 }
