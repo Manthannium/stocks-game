@@ -108,15 +108,11 @@ Example
 
 - Unshorting, also called **covering**, closes some or all of your existing short position. 
 - You can cover only shares you have already shorted. 
-- The cover cost is deducted from your cash immediately. 
 - Your short position decreases by the number of shares covered.
 
 Example
-- You have shorted 200 shares of Stock B. 
-- Its current price is 22. 
+- You have shorted 200 shares of Stock B.  
 - You cover 50. 
-- Cover cost: 50 × 22 = 1,100. 
-- Your cash decreases by 1,100. 
 - Your remaining short position is 150 shares.
 - You cannot cover more shares than your current short position.
 
@@ -229,8 +225,7 @@ the stock rises.
 ### Know the difference between selling and unshorting
 
 -   **Sell** closes a long position and adds sale proceeds to cash.
--   **Unshort** closes a short position and deducts the cover cost from
-    cash.
+-   **Unshort** closes a short position
 
 ### Check remaining share supply
 

@@ -42,10 +42,10 @@ export default function App() {
           },
           (response) => {
             if (!response?.success) {
-              console.error(
-                "Could not rejoin game:",
-                response?.message || "Unknown error"
-              );
+              const reason = response?.error || "Unknown error";
+              console.error("Could not rejoin game:", reason);
+              localStorage.removeItem(SESSION_KEY);
+              setNotice(`Could not rejoin game: ${reason}`);
               return;
             }
 
@@ -196,8 +196,9 @@ export default function App() {
       setGameCode(code);
       setPlayerId(id);
 
-      if (response.game) {
-        setGame(response.game);
+      const state = response.gameState || response.game;
+      if (state) {
+        setGame(state);
       }
 
       saveSession(code, id);
@@ -240,14 +241,16 @@ export default function App() {
       setGameCode(returnedCode);
       setPlayerId(id);
 
-      if (response.game) {
-        setGame(response.game);
+      const state = response.gameState || response.game;
+
+      if (state) {
+        setGame(state);
       }
 
       saveSession(returnedCode, id);
 
       setScreen(
-        response.game?.phase === "playing" ? "game" : "lobby"
+        state && state.phase !== "waiting" ? "game" : "lobby"
       );
     } catch (error) {
       setNotice(error.message);
@@ -266,7 +269,10 @@ export default function App() {
         code: gameCode
       });
 
-      if (response.game) setGame(response.game);
+      const state = response.gameState || response.game;
+      if (state) {
+        setGame(state);
+      }
 
       setScreen("game");
     } catch (error) {
@@ -303,7 +309,11 @@ export default function App() {
         code: gameCode
       });
 
-      if (response.game) setGame(response.game);
+      const state = response.gameState || response.game;
+      if (state) {
+        setGame(state);
+      }
+
     } catch (error) {
       setNotice(error.message);
     } finally {
@@ -330,6 +340,14 @@ export default function App() {
 
     socket.emit("leaveGame", {}, (response) => {
       if (!response?.success) {
+        if (
+          response?.error === "You are not in a game" ||
+          response?.error === "Game not found"
+        ) {
+          leaveGame();
+          return;
+        }
+
         setNotice(
           response?.error || "Unable to leave the game."
         );
@@ -352,7 +370,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand-button" onClick={leaveGame}>
+        <button className="brand-button" onClick={gameCode ? handleLeaveGame :leaveGame}>
           <span className="brand-mark">S</span>
           <span>
             {/* market<span className="brand-accent">rush</span> */}
@@ -402,7 +420,7 @@ export default function App() {
             isHost={isHost}
             busy={busy}
             onStart={startGame}
-            onBack={leaveGame}
+            onBack={handleLeaveGame}
           />
         )}
 

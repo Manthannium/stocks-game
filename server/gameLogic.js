@@ -608,7 +608,7 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
     throw new Error("Position not found for this player and stock.");
   }
 
-  const tradeValue = shares * stock.price;
+  const tradeValue = roundMoney(shares * stock.price);
 
   switch (normalizedAction) {
     case "BUY": {
@@ -637,7 +637,7 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
             );
         }
 
-        currentPlayer.cash -= tradeValue;
+        currentPlayer.cash = roundMoney(currentPlayer.cash - tradeValue);
         position.longShares += shares;
         break;
     }
@@ -648,7 +648,7 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
         }
 
         position.longShares -= shares;
-        currentPlayer.cash += tradeValue;
+        currentPlayer.cash = roundMoney(currentPlayer.cash + tradeValue);
         break;
     }
 
