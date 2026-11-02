@@ -55,6 +55,9 @@ const playerSockets = new Map();
 const MAX_CONCURRENT_GAMES = 50;
 const MAX_TOTAL_PLAYERS = 200;
 
+const GAME_IDLE_TIMEOUT_MS = 60 * 60 * 1000; // 1 hour
+const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
 let totalConnectedPlayers = 0;
 
 // ============================================================================
@@ -232,26 +235,43 @@ function reply(callback, result) {
     }
 }
 
+/**
+ * Broadcast what happened after a turn advanced
+ * either the market opened or turn moved to the next player.
+ */
+function broadcastProgression(gameCode, game, progression) {
+    if(!progression) return;
+
+    if (progression.cycleComplete) {
+        broadcastToGame(gameCode, "openPhaseCompleted", {
+            openResult: progression.openResult,
+        });
+    } else {
+        broadcastToGame(gameCode, "turnChanged", {
+            cycle: game.cycle,
+            actionRound: game.actionRound,
+            currentPlayerId: progression.currentPlayerId,
+        });
+    }
+}
+
+
 // ============================================================================
 // AUTOMATIC CLEANUP
 // ============================================================================
 
 /**
- * Remove games older than 3 hours.
- *
- * This cleanup is based on creation time, not last activity.
+ * Remove games with no activity for GAME_IDLE_TIMEOUT_MS (1 hour)
+ * Activity = any socket event sent by player in game
  */
 setInterval(() => {
-    const threeHoursAgo =
-        Date.now() - (3 * 60 * 60 * 1000);
+    const idleCutoff = Date.now() - GAME_IDLE_TIMEOUT_MS;
 
     let cleanedCount = 0;
 
     for (const [gameCode, game] of games.entries()) {
-        if (
-            game.createdAt &&
-            game.createdAt < threeHoursAgo
-        ) {
+        const lastActivity = game.lastActivityAt || game.createdAt || 0;
+        if (lastActivity < idleCutoff) {
             games.delete(gameCode);
 
             // Remove socket mappings associated with this game.
@@ -274,7 +294,7 @@ setInterval(() => {
             `Active games: ${games.size}`
         );
     }
-}, 30 * 60 * 1000);
+}, CLEANUP_INTERVAL_MS);
 
 // ============================================================================
 // SOCKET CONNECTION
@@ -304,6 +324,24 @@ io.on("connection", socket => {
         `Player connected: ${socket.id} ` +
         `(${totalConnectedPlayers}/${MAX_TOTAL_PLAYERS})`
     );
+
+    // ========================================================================
+    // ACTIVITY TRACKING
+    // ========================================================================
+
+    socket.use((_packet, next) => {
+        const info = playerSockets.get(socket.id);
+
+        if (info) {
+            const game = games.get(info.gameId);
+
+            if (game) {
+                game.lastActivityAt = Date.now();
+            }
+        }
+
+        next();
+    });
 
     // ========================================================================
     // CREATE GAME
@@ -341,6 +379,7 @@ io.on("connection", socket => {
 
         game.hostId = playerId;
         game.createdAt = Date.now();
+        game.lastActivityAt = game.createdAt;
 
         games.set(gameCode, game);
 
@@ -366,6 +405,9 @@ io.on("connection", socket => {
                 playerId
             ),
         });
+
+        // push th standard per-player game state as well
+        broadcastGameState(gameCode);
     });
 
     // ========================================================================
@@ -415,6 +457,8 @@ io.on("connection", socket => {
         if (!result.success) {
             return reply(callback, result);
         }
+
+        game.lastActivityAt = Date.now();
 
         playerSockets.set(socket.id, {
             gameId: code,
@@ -529,6 +573,9 @@ io.on("connection", socket => {
             shares = 0,
         } = payload;
 
+        const cycle = game.cycle;
+        const actionRound = game.actionRound;
+
         try {
             const result = GameLogic.takeTurn(
                 game,
@@ -546,6 +593,8 @@ io.on("connection", socket => {
                 cycle: game.cycle,
                 actionRound: game.actionRound,
             });
+
+            broadcastProgression(gameId, game, result.progression);
 
             if (result.progression?.cycleComplete) {
                 broadcastToGame(gameId, "openPhaseCompleted", {
@@ -595,52 +644,42 @@ io.on("connection", socket => {
             playerId,
         } = context;
 
-        const result = GameLogic.passTurn(
-            game,
-            playerId
-        );
+        const cycle = game.cycle;
+        const actionRound = game.actionRound;
 
-        if (!result.success) {
-            return reply(callback, result);
-        }
-
-        broadcastToGame(gameId, "turnAction", {
-            playerId,
-            action: "PASS",
-
-            cycle: game.cycle,
-            actionRound: game.actionRound,
-        });
-
-        if (result.progression.cycleComplete) {
-            broadcastToGame(
-                gameId,
-                "openPhaseCompleted",
-                {
-                    openResult: result.progression.openResult,
-                }
-            );
-        } else {
-            broadcastToGame(gameId, "turnChanged", {
-                cycle: game.cycle,
-
-                actionRound: game.actionRound,
-
-                currentPlayerId:
-                    result.progression.currentPlayerId,
-            });
-        }
-
-        broadcastGameState(gameId);
-
-        reply(callback, {
-            ...result,
-
-            gameState: GameLogic.getPlayerView(
+        try {
+            const result = GameLogic.passTurn(
                 game,
                 playerId
-            ),
-        });
+            );
+
+            broadcastToGame(gameId, "turnAction", {
+                playerId,
+                action: "PASS",
+                cycle: game.cycle,
+                actionRound: game.actionRound,
+            });
+
+            broadcastProgression(gameId, game, result.progression);
+
+            broadcastGameState(gameId);
+
+            return reply(callback, {
+                ...result,
+                gameState: GameLogic.getPlayerView(
+                    game,
+                    playerId
+                ),
+            });
+
+        } catch (error) {
+            socket.emit("errorMessage", error.message);
+
+            return reply(callback, {
+                success: false,
+                error: error.message,
+            });
+        }
     });
 
     // ========================================================================
@@ -777,6 +816,7 @@ io.on("connection", socket => {
             playerId,
         });
         player.isOnline = true;
+        game.lastActivityAt = Date.now();
 
         // Add the new socket to the existing game room.
         socket.join(code);
