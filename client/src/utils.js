@@ -5,6 +5,14 @@ export const money = (value) =>
     maximumFractionDigits: 2
   }).format(Number(value || 0));
 
+// "+$1,234.00" / "-$1,234.00" / "$0.00"
+export const signedMoney = (value) => {
+  const number = Number(value || 0);
+  const sign = number > 0 ? "+" : number < 0 ? "-" : "";
+
+  return `${sign}${money(Math.abs(number))}`;
+};
+
 export const safeArray = (value) =>
   Array.isArray(value) ? value : [];
 

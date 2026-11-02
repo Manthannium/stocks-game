@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   ArrowDownToLine,
@@ -9,7 +9,8 @@ import {
   TrendingUp
 } from "lucide-react";
 
-import { money } from "../utils";
+import CollapsiblePanel from "./CollapsiblePanel";
+import { getStockLogo, money } from "../utils";
 
 const ACTIONS = [
   { id: "BUY", label: "Buy", icon: TrendingUp },
@@ -29,6 +30,14 @@ export default function TradePanel({
   const [action, setAction] = useState("BUY");
   const [shares, setShares] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+
+  // Opens automatically when your turn starts and closes when it ends.
+  // The player can still toggle it manually at any time.
+  const [expanded, setExpanded] = useState(isMyTurn);
+
+  useEffect(() => {
+    setExpanded(isMyTurn);
+  }, [isMyTurn]);
 
   const maxShares = useMemo(() => {
     if (!stock || !position) return 0;
@@ -72,16 +81,38 @@ export default function TradePanel({
   }
 
   return (
-    <div className="panel trade-panel">
-        <div className="panel-heading">
-            <div>
-              <div className="panel-label">PLACE YOUR TRADE</div>
-            </div>
+    <CollapsiblePanel
+      className="trade-panel"
+      title="PLACE YOUR TRADE"
+      expanded={expanded}
+      onToggle={() => setExpanded((value) => !value)}
+      headerRight={
+        isMyTurn ? (
+          <span className="your-turn-tag">
+            <i /> YOUR TURN
+          </span>
+        ) : (
+          <span className="price-mini">
+            {stock?.ticker ? `${stock.ticker} · ` : ""}
+            {money(stock?.price || 0)}
+          </span>
+        )
+      }
+    >
+        <div className="trade-stock-row">
+          <div className="trade-stock-name">
+            {stock && <img src={getStockLogo(stock)} alt="" />}
 
-            <span className="price-mini">
-              {money(stock?.price || 0)}
-              <small> / share</small>
+            <span>
+              <b>{stock?.name || "Select a stock"}</b>
+              <small>{stock?.ticker || stock?.id || ""}</small>
             </span>
+          </div>
+
+          <span className="price-mini">
+            {money(stock?.price || 0)}
+            <small> / share</small>
+          </span>
         </div>
 
         <div className="action-grid">
@@ -103,7 +134,6 @@ export default function TradePanel({
         <div className="quantity-row">
           <div>
             <label>QUANTITY</label>
-            {/* <small>Whole shares only</small> */}
           </div>
 
           <div className="quantity-control">
@@ -209,6 +239,6 @@ export default function TradePanel({
             No shares or buying power available for this action.
           </p>
         )}
-      </div>
-    );
+    </CollapsiblePanel>
+  );
 }

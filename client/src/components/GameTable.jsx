@@ -18,6 +18,8 @@ import PositionBoard from "./PositionBoard";
 import Card from "./Card";
 import TradePanel from "./TradePanel";
 import Leaderboard from "./Leaderboard";
+import Logbook from "./Logbook";
+import MarketOpenModal from "./MarketOpenModal";
 
 import {
   getStockLogo,
@@ -383,6 +385,13 @@ export default function GameTable({
             </div>
           )}
 
+          {/* Logbook */}
+
+          <Logbook
+            entries={game?.log}
+            players={players}
+          />
+
           {/* Trade ticket */}
 
           <TradePanel
@@ -425,6 +434,17 @@ export default function GameTable({
           
         </aside>
       </div>
+
+      {/* Full-screen market open results (blocks the table until next cycle) */}
+      
+      <MarketOpenModal
+        game={game}
+        playerId={playerId}
+        isHost={isHost}
+        busy={busy}
+        onNextCycle={onNextCycle}
+      />
+
     </section>
   );
 }
