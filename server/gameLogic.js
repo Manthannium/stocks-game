@@ -65,6 +65,9 @@ export const PLAYER_COLORS = [
     "#8313de",
 ];
 
+// Logbook configs
+export const LOGBOOK_MAX_ENTRIES = 100;
+
 // ============================================================================
 // CONFIGURATION VALIDATION
 // ============================================================================
@@ -118,6 +121,24 @@ function getPosition(game, stockId, playerId) {
 
 function getNetPosition(position) {
     return position.longShares - position.shortShares;
+}
+
+function addLogEntry(game, entry) {
+    if(!Array.isArray(game.log)) {
+        game.log = [];
+    }
+    game.logSeq = (game.logSeq || 0) + 1;
+
+    game.log.push({
+        id:game.logSeq,
+        timestamp: Date.now(),
+        cycle: game.cycle,
+        actionRound: game.actionRound,
+        ...entry,
+    });
+    if (game.log.length > LOGBOOK_MAX_ENTRIES) {
+        game.log.shift();
+    }
 }
 
 // ============================================================================
@@ -279,6 +300,8 @@ export function createGame(gameId, hostPlayer) {
         lastOpen: null,
         leaderboard: [],
         createdAt: Date.now(),
+        log: [],
+        logSeq: 0,
     };
 }
 
@@ -367,8 +390,20 @@ export function removePlayer(game, playerId) {
     );
 
     // Transfer host responsibility if necessary.
-    if (game.hostId === playerId) {
+    const hostChanged = game.hostId === playerId;
+    
+    if(hostChanged) {
         game.hostId = game.players[0]?.id || null;
+    }
+
+    if(game.phase !== "waiting") {
+        addLogEntry(game, {
+            type: "PLAYER_LEFT",
+            playerId,
+            playerName: removedPlayer.name,
+            playerColor: removedPlayer.color,
+            newHostName: hostChanged ? game.players[0]?.name || null : null,
+        });
     }
 
     // Recalculate the visible turn-order numbers.
@@ -389,6 +424,11 @@ export function removePlayer(game, playerId) {
         game.currentPlayerIndex = 0;
         game.actionRound = 0;
         game.leaderboard = getLeaderboard(game);
+
+        addLogEntry(game, {
+            type: "GAME_FINISHED",
+            reason: "Not enough players remaining",
+        });
     }
 
     // Adjust turn progression if the game is still active.
@@ -500,6 +540,12 @@ export function startGame(game) {
     game.lastOpen = null;
     game.leaderboard = [];
 
+    game.log = [];
+    addLogEntry(game, {
+        type: "GAME_STARTED",
+        players: game.players.map(player => player.name),
+    });
+
     return {
         success: true,
         cycle: game.cycle,
@@ -577,6 +623,13 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
 
   // PASS does not require a stock or share quantity.
   if (normalizedAction === "PASS") {
+    addLogEntry(game, {
+        type: "PASS",
+        playerId: currentPlayer.id,
+        playerName: currentPlayer.name,
+        playerColor: currentPlayer.color,
+    });
+
     const progression = advanceTurn(game);
 
     return {
@@ -672,6 +725,20 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
         break;
     }
   }
+
+  addLogEntry(game, {
+    type: "TRADE",
+    action: normalizedAction,
+    playerId: currentPlayer.id,
+    playerName: currentPlayer.name,
+    playerColor: currentPlayer.color,
+    stockId: stock.id,
+    ticker: stock.ticker,
+    stockName: stock.name,
+    shares,
+    price: stock.price,
+    value: tradeValue,
+  });
 
   const progression = advanceTurn(game);
 
@@ -858,6 +925,44 @@ export function resolveOpenPhase(game) {
         movementTotals[stock.id] = 0;
     }
 
+    // snapshot every player finances before prices move
+    const snapshot = {};
+
+    for(const player of game.players) {
+        let holdingsValue = 0;
+        const positions = [];
+
+        for(const stockId of Object.keys(oldPrices)) {
+            const position = getPosition(game, stockId, player.id);
+            const longShares = position?.longShares || 0;
+            const shortShares = position?.shortShares || 0;
+            holdingsValue += longShares * oldPrices[stockId];
+
+            if(longShares > 0 || shortShares > 0) {
+                positions.push({
+                    stockId,
+                    longShares,
+                    shortShares,
+                });
+            }
+        }
+
+        snapshot[player.id] = {
+            cash: roundMoney(player.cash),
+            holdingsValue: roundMoney(holdingsValue),
+            netWorth: roundMoney(player.cash + holdingsValue),
+            positions,
+        };
+    }
+
+    // rank before market moves
+    const rankBefore = {};
+    [...game.players ]
+        .sort((a, b) => snapshot[b.id].netWorth - snapshot[a.id].netWorth)
+        .forEach((player, index) => {
+            rankBefore[player.id] = index + 1;
+    });
+
     // Aggregate movement cards.
     for (const player of game.players) {
         for (const card of player.cards) {
@@ -989,10 +1094,60 @@ export function resolveOpenPhase(game) {
     // Calculate leaderboard after all settlements.
     game.leaderboard = getLeaderboard(game);
 
-    // Return cards belonging to active companies to the deck.
-    const returnedCards = game.players.flatMap(
-        player => player.cards
+    // per-player results for the open phase
+    const stockResultById = Object.fromEntries(
+        stockResults.map(result => [result.stockId, result])
     );
+
+    const playerResults = game.players.map(player => {
+        const before = snapshot[player.id];
+        const after = game.leaderboard.find(entry => entry.playerId === player.id);
+        const positions = before.positions.map(item => {
+            const result = stockResultById[item.stockId];
+            return {
+                stockId: item.stockId,
+                ticker: result?.ticker ?? null,
+                longShares: item.longShares,
+                shortShares: item.shortShares,
+                oldPrice: result?.oldPrice ?? null,
+                newPrice: result?.newPrice ?? null,
+                isClosed: result?.isClosed ?? null,
+                longPnL: result ? roundMoney(item.longShares * (result.newPrice - result.oldPrice)) : null,
+                shortPnL: result ? roundMoney(item.shortShares * (result.oldPrice - result.newPrice)) : null,
+            };
+        });
+        const shortPnL = roundMoney(positions.reduce((total, pos) => total + (pos.shortPnL || 0), 0));
+        const longPnL = roundMoney(after.holdingsValue - before.holdingsValue);
+        const closedLoss = roundMoney(positions.filter(pos => pos.isClosed).reduce((total, pos) => total + pos.longShares * pos.oldPrice, 0));
+        const change = roundMoney(after.netWorth - before.netWorth);
+
+        return {
+            playerId: player.id,
+            playerName: player.name,
+            color: player.color,
+
+            cashBefore: before.cash,
+            cashAfter: after.cash,
+
+            holdingsBefore: before.holdingsValue,
+            holdingsAfter: after.holdingsValue,
+
+            rankBefore: rankBefore[player.id],
+            rankAfter: after.rank,
+
+            netWorthBefore: before.netWorth,
+            netWorthAfter: after.netWorth,
+
+            change,
+            changePercent: before.netWorth > 0 ? roundMoney((change / before.netWorth) * 100) : 0,
+            shortPnL,
+            longPnL,
+            closedLoss,
+            positions,
+        };
+    });
+
+    const returnedCards = game.players.flatMap(player => player.cards);
 
     game.deck = shuffleDeck([
         ...game.deck,
@@ -1010,6 +1165,7 @@ export function resolveOpenPhase(game) {
         revealedHands,
         stockResults,
         shortSettlements,
+        playerResults,
 
         closedStocks: stockResults
             .filter(result => result.isClosed)
@@ -1017,6 +1173,42 @@ export function resolveOpenPhase(game) {
 
         leaderboard: game.leaderboard,
     };
+
+    // logbook : market summary, closures, each player's cycle results
+    addLogEntry(game, {
+        type: "MARKET_OPENED",
+        movements: stockResults.map(result => ({
+            stockId: result.stockId,
+            ticker: result.ticker,
+            oldPrice: result.oldPrice,
+            movement: result.movement,
+            newPrice: result.newPrice,
+            isClosed: result.isClosed,
+        })),
+    });
+
+    for(const result of stockResults) {
+        if(!result.isClosed) continue;
+    
+        addLogEntry(game, {
+            type: "STOCK_CLOSED",
+            stockId: result.stockId,
+            ticker: result.ticker,
+            oldPrice: result.oldPrice,
+            calculatedPrice: result.calculatedPrice,
+        });
+    }
+
+    for(const result of [...playerResults].sort((a, b) => b.change - a.change)) {
+        addLogEntry(game, {
+            type: "CYCLE_RESULT",
+            playerId: result.playerId,
+            playerName: result.playerName,
+            playerColor: result.color,
+            change: result.change,
+            netWorth: result.netWorthAfter,
+        });
+    }
 
     // Cards have been revealed. They will be replaced at next cycle.
     game.phase = "betweenCycles";
@@ -1056,6 +1248,11 @@ export function startNextCycle(game) {
 
     if (activeStocks.length === 0) {
         game.phase = "finished";
+
+        addLogEntry(game, {
+            type: "GAME_FINISHED",
+            reason: "All companies have closed",
+        });
 
         return {
             success: true,
@@ -1100,6 +1297,11 @@ export function startNextCycle(game) {
     game.actionRound = 1;
 
     game.lastOpen = null;
+
+    addLogEntry(game, {
+        type: "CYCLE_STARTED",
+        purse: ADDITIONAL_PURSE,
+    });
 
     return {
         success: true,
@@ -1251,6 +1453,8 @@ export function getPlayerView(game, playerId) {
         })),
 
         lastOpen,
+
+        log: structuredClone(game.log || []).slice(-LOGBOOK_MAX_ENTRIES),
 
         leaderboard: game.leaderboard.map(entry => ({
             ...entry,

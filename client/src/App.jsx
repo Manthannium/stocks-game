@@ -106,10 +106,6 @@ export default function App() {
 
     const onOpenPhaseCompleted = (payload) => {
       if (payload?.game) setGame(payload.game);
-
-      setNotice(
-        "Market opened. Prices and player positions have been updated."
-      );
     };
 
     const onPlayerJoined = (payload) => {
