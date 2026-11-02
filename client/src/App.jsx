@@ -436,7 +436,7 @@ export default function App() {
       </main>
 
       <footer className="footer-note">
-        Made with 💜 by Manthan Patel
+        Made with ❤️ by Manthan Patel
       </footer>
     </div>
   );
