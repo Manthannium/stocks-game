@@ -11,7 +11,7 @@
 | Frontend | React |
 | Frontend tooling | Vite |
 | Backend | Node.js |
-| HTTP server | Express |
+| HTTPS server | Express |
 | Real-time communication | Socket.IO |
 | Language | JavaScript (ES Modules) |
 | Styling | CSS |
@@ -20,6 +20,9 @@
 
 ### 📜 Setup
 ```sh
+# setup env
+cp .env.example .env
+
 # start server
 cd server
 npm install
@@ -141,22 +144,10 @@ For the complete rules, examples, trading mechanics, and settlement calculations
 
 ---
 
-### 👷🏻‍♂️ TODO
-Backend
-- Allow admin to config stock settings (or simply shuffle stocks profile)
+### 📌 Contributing
 
-Features
-- CASH REDEEM - directy redeem cash in your turn
-- CENTRAL BANK RATE CUT - players holding cash will get aggregated interest from all these cards
-- GLOBAL RECESSION - treat this as -1 for all stocks
-- TECHNOLOGY BOOM - treat this like +1 for all stocks
-- DIVIDEND - this is stock specific card. That stock holders will get cash of 5% oh their holdings
-- RESTORE THE CLOSED COMPANY - this will restore the company price back to when it was last time (or base price). bringing back all movement cards from next cycle
-- CHARIMAN : logic and 1 movement card suspend
-- other special cards
-
-Debt
-- Please make styles.css smaller by removing overriden styles 
+Though MVP is ready, there is still lot of features left to implement.
+**[See TODO tasks →](docs/todo)**
 
 ---
 
