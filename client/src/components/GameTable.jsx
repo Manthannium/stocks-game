@@ -20,6 +20,7 @@ import TradePanel from "./TradePanel";
 import Leaderboard from "./Leaderboard";
 import Logbook from "./Logbook";
 import MarketOpenModal from "./MarketOpenModal";
+import AnimatedMoney from "./AnimatedMoney";
 
 import {
   getStockLogo,
@@ -114,7 +115,7 @@ export default function GameTable({
     ? getPlayerName(currentPlayer)
     : "Waiting";
 
-  const sortedHand = [...(game?.hand || [])].sort((a, b) => {
+  const sortedHand = [...hand].sort((a, b) => {
     // First sort by stock ticket
     const stockA = String(a.stockId);
     const stockB = String(b.stockId);
@@ -139,6 +140,13 @@ export default function GameTable({
         {/* Market Stock cards */}
 
         <div className="market-column">
+        {isMyTurn && (
+          <div className="your-turn-banner" role="status">
+            <span className="your-turn-tag"><i /> YOUR TURN</span>
+            <span>Pick a stock, then trade or pass. Round {actionRound} / 3</span>
+          </div>
+        )}
+
           <div className="stock-grid">
             {stocks.map((stock) => (
               <StockCard
@@ -184,7 +192,7 @@ export default function GameTable({
             </div>
 
             {hand.length > 0 ? (
-              <div className="hand-cards">
+              <div className="hand-cards" key={`hand-${cycle}`}>
                 {sortedHand.map((card, index) => (
                   <Card
                     key={card.id || `${card.stockId}-${index}`}
@@ -411,7 +419,7 @@ export default function GameTable({
                 <Wallet size={15} /> CASH BALANCE
               </span>
 
-              <tt>{money(me?.cash || 0)}</tt>
+              <AnimatedMoney className="stat-value" value={me?.cash || 0} />
             </div>
 
             <div className="stat-card">
@@ -419,15 +427,15 @@ export default function GameTable({
                 <Coins size={15} /> LONG POSITIONS
               </span>
 
-              <tt>{money(totalLongValue)}</tt>
+              <AnimatedMoney className="stat-value" value={totalLongValue} />
             </div>
 
-            <div className="stat-card">
+            <div className="stat-card net-worth">
               <span>
                 <Trophy size={15} /> NET WORTH
               </span>
 
-              <tt>{money(myNetWorth)}</tt>
+              <AnimatedMoney className="stat-value" value={myNetWorth} />
             </div>
           </div>
 

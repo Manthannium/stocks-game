@@ -503,7 +503,7 @@ button:disabled {
 
 .lobby-grid {
   display: grid;
-  grid-template-columns: .8fr 1.2fr;
+  grid-template-columns: .5fr 1.5fr;
   gap: 18px;
 }
 
@@ -886,9 +886,9 @@ button:disabled {
 }
 
 .stock-ticker {
-  font: 9px 'DM Mono';
+  font: 25px 'DM Mono';
   color: #7f8ba3;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .stock-price {

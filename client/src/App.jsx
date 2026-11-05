@@ -153,6 +153,12 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!notice) return;
+    const id = setTimeout(() => setNotice(""), 5000);
+    return () => clearTimeout(id);
+  }, [notice]);
+
   function saveSession(code, id) {
     localStorage.setItem(
       SESSION_KEY,
@@ -367,7 +373,7 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <button className="brand-button" onClick={gameCode ? handleLeaveGame :leaveGame}>
-          <span className="brand-mark">S</span>
+          <span className="brand-mark">💲</span>
           <span>
             {/* market<span className="brand-accent">rush</span> */}
             stocks
@@ -393,13 +399,14 @@ export default function App() {
       </header>
 
       {notice && (
-        <div className="toast">
+        <div className="toast" role="alert" aria-live="assertive" key={notice}>
           {notice}
-          <button onClick={() => setNotice("")}>×</button>
+          <button onClick={() => setNotice("")} aria-label="Dismiss">×</button>
+          <span className="toast-progress" />
         </div>
       )}
 
-      <main className="main-content">
+      <main className="main-content" key={screen}>
         {screen === "landing" && (
           <LandingPage
             onCreate={createGame}
