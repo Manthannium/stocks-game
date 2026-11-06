@@ -23,26 +23,35 @@
 // ============================================================================
 
 export const STOCKS = [
-    { id: "A", ticker: "AMZN",  name: "Amazon",     price: 1 },
-    { id: "B", ticker: "MSFT",  name: "Microsoft",  price: 2 },
+    { id: "A", ticker: "AMZN",  name: "Amazon",     price: 2 },
+    { id: "B", ticker: "MSFT",  name: "Microsoft",  price: 2.5 },
     { id: "C", ticker: "GOOG",  name: "Google",     price: 3 },
-    { id: "D", ticker: "PANW",  name: "Palo Alto",  price: 4 },
-    { id: "E", ticker: "AAPL",  name: "Apple",      price: 5 },
-    { id: "F", ticker: "META",  name: "Meta",       price: 6 },
+    { id: "D", ticker: "AAPL",  name: "Apple",      price: 4 },
+    { id: "E", ticker: "META",  name: "Meta",       price: 5 },
+    { id: "F", ticker: "PANW",  name: "Palo Alto",  price: 6 },
     { id: "G", ticker: "NVDA",  name: "Nvidia",     price: 8 },
+    // { id: "H", ticker: "TSLA",  name: "Tesla",      price: 8 },
+    // { id: "I", ticker: "RBRK",  name: "Rubrik",     price: 6 },
+    // { id: "J", ticker: "SHEL",  name: "Shell",      price: 3 },
+    // { id: "K", ticker: "ORCL",  name: "Oracle",     price: 5 },
+    // { id: "L", ticker: "ANTH",  name: "Anthropic",  price: 2.5 },
 ];
 
-const MOVEMENTS = [-3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3
-];
+const MOVEMENTS = [-3, -2.5, -2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5, 3];
 
 const FREQUENCY = [
-    [0, 0, 0, 0, 2, 8, 8, 2, 0, 0, 0, 0],  // A - stable
-    [0, 0, 4, 3, 2, 1, 1, 2, 3, 4, 0, 0],  // B - volatile
-    [1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1],  // C - evenly spread
-    [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0],  // D - small movements
-    [3, 0, 3, 0, 4, 0, 0, 4, 0, 3, 0, 3],  // E - no fractional movements
-    [3, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 3],  // F - highly volatile
-    [1, 1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 1],  // G - stable
+    [0, 0, 0, 0, 2, 8, 8, 2, 0, 0, 0, 0],  // A - small, stable
+    [0, 0, 4, 3, 2, 1, 1, 2, 3, 4, 0, 0],  // B - small, volatile
+    [1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1],  // C - medium, evenly spread
+    [3, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 3],  // D - medium, highly volatile
+    [3, 0, 3, 0, 4, 0, 0, 4, 0, 3, 0, 3],  // E - medium, no fractional movements
+    [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0],  // F - medium, small movements
+    [1, 1, 1, 2, 2, 3, 3, 2, 2, 1, 1, 1],  // G - large, stable
+    // [4, 0, 4, 0, 2, 0, 0, 2, 0, 4, 0, 4],  // H - large, volatile
+    // [0, 0, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0],  // I - medium, small movements
+    // [1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1],  // J - medium, evenly spread
+    // [3, 0, 3, 0, 4, 0, 0, 4, 0, 3, 0, 3],  // K - medium, no fractional movements
+    // [0, 0, 4, 3, 2, 1, 1, 2, 3, 4, 0, 0],  // L - small, volatile
 ];
 
 export const PURSE = 20000;
@@ -709,8 +718,20 @@ export function takeTurn(game, playerId, action, stockId = null, shares = 0) {
     }
 
     case "SHORT": {
-        if (tradeValue > currentPlayer.cash) {
-            throw new Error("Short position value cannot exceed available cash.");
+        const existingShortExposure = game.stocks.reduce((total, stock) => {
+            if(!stock.isActive) return total;
+            const pos = getPosition(game, stock.id, currentPlayer.id);
+            return total + (pos?.shortShares || 0) * stock.price;
+        }, 0);
+
+        const totalShortExposure = existingShortExposure + tradeValue;
+
+        if(totalShortExposure > currentPlayer.cash) {
+            const remaining = Math.max(0, roundMoney(currentPlayer.cash - existingShortExposure));
+            throw new Error(
+                `Total short exposure cannot exceed available cash. ` +
+                `You can short up to $${remaining.toLocaleString()} more. `
+            );
         }
 
         position.shortShares += shares;

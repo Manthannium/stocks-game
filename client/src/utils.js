@@ -24,40 +24,7 @@ export const getPlayerName = (player) =>
 
 export function getStockLogo(stock) {
   const key = `${stock?.ticker || ""} ${stock?.name || ""}`.toLowerCase();
-
-  if (key.includes("meta") || key.includes("facebook")) {
-    return "/logos/meta.jpeg";
-  }
-
-  if (
-    key.includes("google") ||
-    key.includes("alphabet") ||
-    key.includes("goog")
-  ) {
-    return "/logos/google.svg";
-  }
-
-  if (key.includes("nvidia") || key.includes("nvda")) {
-    return "/logos/nvidia.png";
-  }
-
-  if (key.includes("microsoft") || key.includes("msft")) {
-    return "/logos/microsoft.svg";
-  }
-
-  if (key.includes("amazon") || key.includes("amzn")) {
-    return "/logos/amazon.png";
-  }
-
-  if (key.includes("apple") || key.includes("aapl")) {
-    return "/logos/apple.svg";
-  }
-
-  if (key.includes("palo-alto") || key.includes("panw")) {
-    return "/logos/paloalto.png";
-  }
-
-  return "/logos/default.svg";
+  return `/logos/${stock?.ticker || "default"}.png`;
 }
 
 export function getCurrentPlayer(game, playerId) {

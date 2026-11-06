@@ -101,6 +101,15 @@ export default function GameTable({
     0
   );
 
+  const shortExposure = activeStocks.reduce((sum, stock) => {
+    const position = board?.[stock.id]?.[playerId] || {};
+
+    return (
+      sum +
+      Number(position.shortShares || 0) * Number(stock.price || 0)
+    );
+  }, 0);
+
   const myNetWorth =
     Number(me?.cash || 0) + totalLongValue;
 
@@ -406,6 +415,7 @@ export default function GameTable({
             stock={selectedStock}
             position={myPosition}
             cash={me?.cash || 0}
+            shortExposure={shortExposure}
             isMyTurn={isMyTurn}
             onAction={onAction}
             busy={busy}
