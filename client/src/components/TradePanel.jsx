@@ -24,6 +24,7 @@ export default function TradePanel({
   stock,
   position,
   cash,
+  shortExposure = 0,
   isMyTurn,
   onAction,
   busy
@@ -43,9 +44,18 @@ export default function TradePanel({
   const maxShares = useMemo(() => {
     if (!stock || !position) return 0;
 
-    if (action === "BUY" || action === "SHORT") {
+    if (action === "BUY") {
       return stock.price > 0
-        ? Math.min( Math.floor(stock.sharesAvailable), Math.max(0, Math.floor(Number(cash || 0) / stock.price)))
+        ? Math.min( 
+            Math.floor(stock.sharesAvailable), 
+            Math.max(0, Math.floor(Number(cash || 0) / stock.price)))
+        : 0;
+    }
+
+    if (action === "SHORT") {
+      const remainingCapacity = Math.max(0, Number(cash || 0) - Number(shortExposure || 0));
+      return stock.price > 0
+        ? Math.floor(remainingCapacity / stock.price)
         : 0;
     }
 
@@ -200,8 +210,8 @@ export default function TradePanel({
 
         {action === "SHORT" && (
           <p className="trade-note">
-            Short exposure cannot exceed your available cash.
-            Short-sale proceeds are not added to your cash balance.
+            Total short exposure cannot exceed your available cash.
+            Remaining short capacity : {money(Math.max(0, Number(cash || 0) - Number(shortExposure || 0)))}
           </p>
         )}
 
