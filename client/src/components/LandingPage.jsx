@@ -9,6 +9,16 @@ import {
 		ZapOff
 } from "lucide-react";
 
+const TICKER = [
+  { t: "PANW", v: 2.4 }, 
+  { t: "NVDA", v: -0.8 }, 
+  { t: "META", v: 1.2 },
+  { t: "MSFT", v: -0.6 }, 
+  { t: "AAPL", v: 0.9 }, 
+  { t: "GOOG", v: 1.7 },
+  { t: "AMZN", v: -1.1 }
+];
+
 export default function LandingPage({ onCreate, onJoin, busy }) {
   	const [name, setName] = useState("");
   	const [code, setCode] = useState("");
@@ -34,8 +44,8 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		  			{/* MULTIPLAYER MARKET STRATEGY */}
 				</div>
 
-				<h1>
-		  			🏛️ Stocks 🏛️
+				<h1 className="hero-title">
+		  			🏛️ Stocks O7 🏛️
 		  		<br />
 		  		{/* <span>Stocks</span> */}
 				</h1>
@@ -51,7 +61,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			  <ChartNoAxesCombined size={18} />
 			</span>
 			<span>
-			  <b>Stock Market Simulation</b>
+			  <b>Stock Market Simulation Game</b>
 			  <small>Buy, sell, short or cover</small>
 			</span>
 		  </div>
@@ -77,12 +87,23 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		  </div>
 		</div>
 
-		<div className="hero-ticker">
+		{/* <div className="hero-ticker">
 		  <span className="ticker-up">▲ PANW +2.4%</span>
 		  <span className="ticker-down">▼ NVDA -0.8%</span>
 		  <span className="ticker-up">▲ META +1.2%</span>
 		  <span className="ticker-down">▼ MSFT -0.6%</span>
+		</div> */}
+
+		<div className="ticker-marquee" aria-hidden="true">
+		  <div className="ticker-track">
+		    {[...TICKER, ...TICKER].map((item, i) => (
+		      <span key={i} className={item.v >= 0 ? "ticker-up" : "ticker-down"}>
+		        {item.v >= 0 ? "▲" : "▼"} {item.t} {item.v > 0 ? "+" : ""}{item.v}%
+		      </span>
+		    ))}
+		  </div>
 		</div>
+
 	  </div>
 
 	  <div className="entry-card">

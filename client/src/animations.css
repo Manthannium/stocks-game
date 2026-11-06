@@ -1,0 +1,669 @@
+/* ============================================================
+   MOTION TOKENS
+   ============================================================ */
+:root {
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --dur-fast: .15s;
+  --dur-med: .3s;
+  --dur-slow: .6s;
+
+  --glow-green:  0 0 0 1px rgba(53,212,138,.35), 0 0 24px rgba(53,212,138,.18);
+  --glow-red:    0 0 0 1px rgba(251,100,124,.35), 0 0 24px rgba(251,100,124,.18);
+  --glow-purple: 0 0 0 1px rgba(174,155,255,.45), 0 8px 30px rgba(174,155,255,.18);
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes deal-in {
+  0%   { opacity: 0; transform: translateY(-30px) rotate(-8deg) scale(.85); }
+  70%  { opacity: 1; transform: translateY(3px) rotate(1deg) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+
+@keyframes flash-up {
+  0%   { background-color: rgba(53,212,138,.28); box-shadow: var(--glow-green); }
+  100% { background-color: transparent; box-shadow: none; }
+}
+
+@keyframes flash-down {
+  0%   { background-color: rgba(251,100,124,.28); box-shadow: var(--glow-red); }
+  100% { background-color: transparent; box-shadow: none; }
+}
+
+@keyframes ping {
+  0%        { transform: scale(1);   opacity: .8; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, -16px) scale(.96); }
+  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+@keyframes turn-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(53,212,138,.25), 0 0 0 rgba(53,212,138,0); }
+  50%      { box-shadow: 0 0 0 1px rgba(53,212,138,.55), 0 0 28px rgba(53,212,138,.22); }
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translate3d(0, -10vh, 0) rotate(0); opacity: 1; }
+  100% { transform: translate3d(var(--drift, 0), 110vh, 0) rotate(720deg); opacity: .9; }
+}
+
+/* ============================================================
+   PAGE / SCREEN TRANSITIONS
+   ============================================================ */
+.landing-grid,
+.lobby-wrap,
+.game-wrap {
+  animation: fade-up var(--dur-slow) var(--ease-out) both;
+}
+
+/* Staggered hero entrance */
+.hero-copy > * { animation: fade-up .7s var(--ease-out) both; }
+.hero-copy > *:nth-child(1) { animation-delay: .05s; }
+.hero-copy > *:nth-child(2) { animation-delay: .12s; }
+.hero-copy > *:nth-child(3) { animation-delay: .19s; }
+.hero-copy > *:nth-child(4) { animation-delay: .26s; }
+.hero-copy > *:nth-child(5) { animation-delay: .33s; }
+
+.hero-features > div { animation: fade-up .6s var(--ease-out) both; }
+.hero-features > div:nth-child(1) { animation-delay: .30s; }
+.hero-features > div:nth-child(2) { animation-delay: .38s; }
+.hero-features > div:nth-child(3) { animation-delay: .46s; }
+
+.entry-card {
+  animation: scale-in .6s var(--ease-out) .15s both;
+}
+
+/* ============================================================
+   LIVE STATUS DOTS (radar "ping" ring)
+   ============================================================ */
+.connection-pill i,
+.live-label i,
+.waiting-tag i,
+.your-turn-tag i,
+.online-dot {
+  position: relative;
+}
+
+.connection-pill i::after,
+.live-label i::after,
+.waiting-tag i::after,
+.your-turn-tag i::after,
+.online-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: ping 1.8s cubic-bezier(0, 0, .2, 1) infinite;
+}
+
+.connection-pill.disconnected i::after { animation-duration: .9s; }
+
+/* ============================================================
+   LANDING: MARQUEE TICKER
+   ============================================================ */
+.ticker-marquee {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.ticker-track {
+  display: flex;
+  gap: 32px;
+  width: 30vw;
+  animation: marquee 10s linear infinite;
+}
+
+.ticker-marquee:hover .ticker-track { animation-play-state: paused; }
+
+.ticker-track span {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   BUTTONS: tactile press + sheen sweep
+   ============================================================ */
+.primary-button,
+.secondary-button,
+.action-option,
+.pass-button,
+.segmented button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out),
+    background var(--dur-med) ease,
+    border-color var(--dur-med) ease,
+    color var(--dur-med) ease;
+}
+
+.primary-button:active:not(:disabled),
+.secondary-button:active:not(:disabled),
+.action-option:active:not(:disabled),
+.pass-button:active:not(:disabled) {
+  transform: translateY(1px) scale(.98);
+}
+
+.primary-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .7s var(--ease-out);
+  pointer-events: none;
+}
+
+.primary-button:hover:not(:disabled)::after { transform: translateX(120%); }
+
+.action-option.active { transform: translateY(-2px); }
+
+.action-option svg { transition: transform var(--dur-med) var(--ease-spring); }
+
+.action-option.active svg,
+.action-option:hover:not(:disabled) svg {
+  transform: scale(1.18);
+}
+
+/* ============================================================
+   STOCK CARDS
+   ============================================================ */
+.stock-card {
+  max-width: none;                       /* fill the grid cell (fixes uneven gaps) */
+  transition:
+    transform var(--dur-med) var(--ease-out),
+    border-color var(--dur-med) ease,
+    box-shadow var(--dur-med) ease,
+    background var(--dur-med) ease;
+  animation: fade-up .5s var(--ease-out) both;
+}
+
+.stock-grid .stock-card:nth-child(1) { animation-delay: .00s; }
+.stock-grid .stock-card:nth-child(2) { animation-delay: .04s; }
+.stock-grid .stock-card:nth-child(3) { animation-delay: .08s; }
+.stock-grid .stock-card:nth-child(4) { animation-delay: .12s; }
+.stock-grid .stock-card:nth-child(5) { animation-delay: .16s; }
+.stock-grid .stock-card:nth-child(6) { animation-delay: .20s; }
+.stock-grid .stock-card:nth-child(7) { animation-delay: .24s; }
+
+.stock-card:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.35);
+}
+
+.stock-card.stock-selected {
+  transform: translateY(-4px);
+  box-shadow: var(--glow-purple);
+}
+
+.stock-card.stock-selected::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--purple);
+  box-shadow: 0 0 10px var(--purple);
+}
+
+.stock-logo { transition: transform var(--dur-med) var(--ease-spring); }
+
+.stock-card:hover:not(:disabled) .stock-logo { transform: rotate(-6deg) scale(1.08); }
+
+/* Price flash (class toggled by useFlashOnChange, see section 2) */
+.stock-price,
+.stat-card .stat-value {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 0 3px;
+  margin-left: -3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.flash-up   { animation: flash-up .9s var(--ease-out); }
+.flash-down { animation: flash-down .9s var(--ease-out); }
+
+/* Closed stock: grayscale + rubber-stamp */
+.stock-card.stock-closed {
+  filter: grayscale(1);
+  opacity: .45;
+}
+
+.stock-card.stock-closed .closed-stamp {
+  border: 1px solid currentColor;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transform: rotate(-8deg);
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+/* Sparkline (see section 2.4) */
+.sparkline {
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin-top: 8px;
+  overflow: visible;
+}
+
+.sparkline polyline {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-line 1s var(--ease-out) .2s forwards;
+}
+
+.sparkline.up   polyline { stroke: var(--green); filter: drop-shadow(0 0 3px rgba(53,212,138,.5)); }
+.sparkline.down polyline { stroke: var(--red);   filter: drop-shadow(0 0 3px rgba(251,100,124,.5)); }
+
+/* Supply bar */
+.supply-bar {
+  height: 3px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: #222823;
+  overflow: hidden;
+}
+
+.supply-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #20643e, var(--green));
+  transition: width .6s var(--ease-out);
+}
+
+/* ============================================================
+   HAND CARDS: dealing animation + hover lift
+   ============================================================ */
+.hand-cards {
+  perspective: 800px;
+  padding-top: 22px;
+}
+
+.hand-card {
+  animation: deal-in .55s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+  transition:
+    transform var(--dur-med) var(--ease-spring),
+    box-shadow var(--dur-med) ease,
+    border-color var(--dur-med) ease;
+  transform-origin: bottom center;
+}
+
+.hand-card:hover {
+  transform: translateY(-8px) rotate(-2deg) scale(1.04);
+  box-shadow: 0 16px 30px rgba(0,0,0,.45);
+  z-index: 1;
+}
+
+.hand-card.card-positive:hover { box-shadow: 0 16px 30px rgba(0,0,0,.45), var(--glow-green); }
+.hand-card.card-negative:hover { box-shadow: 0 16px 30px rgba(0,0,0,.45), var(--glow-red); }
+
+.hand-card-top { align-items: center; }   /* fixes invalid `align-items: right` */
+
+.card-flat { border-top: 2px solid #6b756e; }
+.card-flat .card-movement { color: #b5beb8; }
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+.panel {
+  transition: border-color var(--dur-med) ease, box-shadow var(--dur-med) ease;
+}
+
+/* Trade panel glows while it is your turn */
+.trade-panel.is-my-turn {
+  border-color: rgba(53,212,138,.55);
+  animation: turn-glow 2.4s ease-in-out infinite;
+}
+
+.trade-estimate b { font-variant-numeric: tabular-nums; }
+
+/* Smoother collapsible body (replaces the 4px nudge) */
+.collapsible-body { animation: fade-up .28s var(--ease-out); }
+
+/* ============================================================
+   TURN ORDER
+   ============================================================ */
+.turn-order-item {
+  position: relative;
+  border-radius: 6px;
+  transition: background var(--dur-med) ease, padding var(--dur-med) var(--ease-out);
+}
+
+.turn-order-item.active-turn {
+  padding-left: 10px;
+  background: linear-gradient(90deg, rgba(53,212,138,.10), transparent 70%);
+}
+
+.turn-order-item.active-turn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: scale-in .3s var(--ease-spring);
+}
+
+.now-tag {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(53,212,138,.12);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   STAT CARDS
+   ============================================================ */
+.stat-card {
+  transition: transform var(--dur-med) var(--ease-out), border-color var(--dur-med) ease;
+}
+
+.stat-card:hover { transform: translateX(3px); }
+
+.stat-card .stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0f3f0;
+}
+
+.stat-card.net-worth {
+  border-color: rgba(174,155,255,.35);
+  background: linear-gradient(90deg, rgba(174,155,255,.08), transparent);
+}
+
+/* ============================================================
+   LOBBY
+   ============================================================ */
+.lobby-player { animation: fade-up .4s var(--ease-out) both; }
+
+.room-code-large {
+  background: linear-gradient(90deg, #fff, #9aa59e, #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+.copy-button.copied {
+  border-color: var(--green);
+  color: var(--green-bright);
+  animation: scale-in .25s var(--ease-spring);
+}
+
+.avatar { transition: transform var(--dur-med) var(--ease-spring); }
+
+.lobby-player:hover .avatar,
+.leader-row:hover .avatar {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+.empty-seat { opacity: .35; }
+
+.empty-seat .avatar {
+  border: 1px dashed #4a534d;
+  background: repeating-linear-gradient(90deg, #1a1f1b 0 6px, #141815 6px 12px);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+.leader-row {
+  border-radius: 6px;
+  transition: background var(--dur-med) ease;
+  will-change: transform;
+}
+
+.leader-row:hover { background: rgba(255,255,255,.03); }
+
+.leader-row.you-row {
+  background: linear-gradient(90deg, rgba(174,155,255,.10), transparent 80%);
+}
+
+.rank-1 svg {
+  filter: drop-shadow(0 0 6px rgba(240,198,110,.65));
+  animation: scale-in .5s var(--ease-spring);
+}
+
+/* ============================================================
+   LOGBOOK
+   ============================================================ */
+.log-entry {
+  animation: fade-up .3s var(--ease-out);
+  transition: background var(--dur-med) ease;
+}
+
+.log-entry:hover { background: #151a17; }
+
+.log-unread { animation: scale-in .3s var(--ease-spring); }
+
+/* ============================================================
+   MARKET OPEN MODAL
+   ============================================================ */
+.mo-dialog { animation: scale-in .4s var(--ease-spring); }
+
+.mo-tile { animation: fade-up .45s var(--ease-out) both; }
+.mo-highlights .mo-tile:nth-child(1) { animation-delay: .10s; }
+.mo-highlights .mo-tile:nth-child(2) { animation-delay: .16s; }
+.mo-highlights .mo-tile:nth-child(3) { animation-delay: .22s; }
+.mo-highlights .mo-tile:nth-child(4) { animation-delay: .28s; }
+
+.mo-table tbody tr { animation: fade-up .35s var(--ease-out) both; }
+.mo-table tbody tr:nth-child(1)   { animation-delay: .20s; }
+.mo-table tbody tr:nth-child(2)   { animation-delay: .24s; }
+.mo-table tbody tr:nth-child(3)   { animation-delay: .28s; }
+.mo-table tbody tr:nth-child(4)   { animation-delay: .32s; }
+.mo-table tbody tr:nth-child(5)   { animation-delay: .36s; }
+.mo-table tbody tr:nth-child(6)   { animation-delay: .40s; }
+.mo-table tbody tr:nth-child(7)   { animation-delay: .44s; }
+.mo-table tbody tr:nth-child(n+8) { animation-delay: .48s; }
+
+.mo-table tbody tr:hover td { background: rgba(255,255,255,.025); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  animation: toast-in .35s var(--ease-spring);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.toast-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: currentColor;
+  opacity: .5;
+  transform-origin: left;
+  animation: toast-progress var(--toast-duration, 5s) linear forwards;
+}
+
+/* ============================================================
+   SEGMENTED CONTROL: sliding indicator (Landing page)
+   ============================================================ */
+/* .segmented { position: relative; }
+
+.segmented::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 7px;
+  background: #252b27;
+  box-shadow: inset 0 0 0 1px #626d65;
+  transition: transform .35s var(--ease-spring);
+}
+
+.segmented[data-mode="join"]::before { transform: translateX(100%); }
+.segmented button { z-index: 1; }
+.segmented button.selected { background: transparent; box-shadow: none; }
+
+*/
+
+/* ============================================================
+   CONFETTI (game finished, winner only)
+   ============================================================ */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+}
+
+.confetti i {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: confetti-fall var(--fall, 3s) linear var(--delay, 0s) forwards;
+}
+
+/* ============================================================
+   RESPONSIVE TWEAKS
+   ============================================================ */
+@media (max-width: 1280px) {
+  .stock-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 800px) {
+  /* Horizontal snap carousel for stocks on tablets/phones */
+  .stock-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 6px 2px;
+  }
+
+  .stock-grid .stock-card {
+    flex: 0 0 42%;
+    scroll-snap-align: start;
+  }
+
+  /* Trade panel sticks to the bottom of the screen on your turn */
+  .trade-panel.is-my-turn {
+    position: sticky;
+    bottom: 8px;
+    z-index: 5;
+  }
+}
+
+@media (max-width: 520px) {
+  .stock-grid .stock-card { flex-basis: 62%; }
+}
+
+/* ============================================================
+   ACCESSIBILITY: respect reduced-motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ticker-track { animation: none !important; }
+  .confetti { display: none; }
+}
+
+.your-turn-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 1px solid rgba(53,212,138,.45);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(53,212,138,.12), transparent 70%);
+  font-size: 11px;
+  color: #cfe9da;
+  animation: fade-up .35s var(--ease-out), turn-glow 2.4s ease-in-out .35s infinite;
+}
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', var(--font-sans);
+}
+
+/* Override the global mono rule, then re-apply mono only where numbers live */
+* { font-family: var(--font-sans) !important; }
+
+h1, h2, h3,
+.brand-button,
+.entry-card h2,
+.mo-header-text h2 {
+  font-family: var(--font-display) !important;
+}
+
+.stock-price, .stock-ticker, .stock-move, .change-pill, .stat-value,
+.leader-worth, .price-mini, .trade-estimate b, .room-code-large,
+.panel-label, .eyebrow, .turn-round, .log-meta, .log-ticker,
+.position-table td, .position-table th, .card-movement, .hand-card-top,
+.mo-table td, .mo-table th, .quantity-control input, .ticker-track span {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums;
+}

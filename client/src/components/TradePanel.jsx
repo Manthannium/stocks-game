@@ -11,6 +11,7 @@ import {
 
 import CollapsiblePanel from "./CollapsiblePanel";
 import { getStockLogo, money } from "../utils";
+import AnimatedMoney from "./AnimatedMoney";
 
 const ACTIONS = [
   { id: "BUY", label: "Buy", icon: TrendingUp },
@@ -82,7 +83,7 @@ export default function TradePanel({
 
   return (
     <CollapsiblePanel
-      className="trade-panel"
+      className={`trade-panel ${isMyTurn ? "is-my-turn" : ""}`}
       title="PLACE YOUR TRADE"
       expanded={expanded}
       onToggle={() => setExpanded((value) => !value)}
@@ -105,7 +106,7 @@ export default function TradePanel({
 
             <span>
               <b>{stock?.name || "Select a stock"}</b>
-              <small>{stock?.ticker || stock?.id || ""}</small>
+              {/* <small>{stock?.ticker || stock?.id || ""}</small> */}
             </span>
           </div>
 
@@ -194,7 +195,7 @@ export default function TradePanel({
               : "Position value"}
           </span>
 
-          <b>{money(estimate)}</b>
+          <b><AnimatedMoney value={estimate} flash={false} /></b>
         </div>
 
         {action === "SHORT" && (

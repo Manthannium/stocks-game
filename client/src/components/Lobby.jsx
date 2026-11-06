@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Check,
   Copy,
   Crown,
   Play,
@@ -39,17 +40,17 @@ export default function Lobby({
       </button>
 
       <div className="lobby-heading">
-        <div className="eyebrow">
+        {/* <div className="eyebrow">
           <span className="eyebrow-dot" />
           WAITING ROOM
-        </div>
+        </div> */}
 
         <h1>
-          Gather your <span>trading crew!</span>
+          Waiting Room
         </h1>
 
         <p className="muted">
-          Share the game code and wait for everyone to join.
+          Share the game code and wait for everyone to join
         </p>
       </div>
 
@@ -62,10 +63,10 @@ export default function Lobby({
           </div>
 
           <button
-            className="secondary-button copy-button"
+            className={`secondary-button copy-button ${copied ? "copied" : ""}`}
             onClick={copyCode}
           >
-            <Copy size={15} />
+            {copied ? <Check size={15} /> : <Copy size={15} />}
             {copied ? "Copied!" : "Copy game code"}
           </button>
 
@@ -102,7 +103,11 @@ export default function Lobby({
               const id = getPlayerId(player);
 
               return (
-                <div className="lobby-player" key={id || index}>
+                <div
+                  className="lobby-player"
+                  key={id || index}
+                  style={{ animationDelay: `${index * 60}ms` }}
+                >
                   <div
                     className="avatar"
                     style={{

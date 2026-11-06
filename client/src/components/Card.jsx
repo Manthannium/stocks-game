@@ -14,13 +14,14 @@ export default function Card({ card, index }) {
     0
   );
 
-  const positive = movement > 0;
+  // const positive = movement > 0;
+  const tone = movement > 0 ? "card-positive" : movement < 0 ? "card-negative" : "card-flat";
 
   return (
     <div
-      className={`hand-card ${
-        positive ? "card-positive" : "card-negative"
-      }`}
+      className={`hand-card ${tone}`}
+      style={{ "--i": index }}
+      title={`${ticker}: ${movement > 0 ? "+" : ""}${movement.toFixed(1)}`}
     >
       <div className="hand-card-top">
         <img

@@ -8,6 +8,8 @@ import {
   getStockLogo,
   money
 } from "../utils";
+import AnimatedMoney from "./AnimatedMoney";
+import Sparkline from "./Sparkline";
 
 // Keep this helper local if you prefer:
 function getHistoryChange(stock) {
@@ -36,11 +38,13 @@ export default function StockCard({
 
   	return (
 		<button
-		className={`stock-card ${
-			selected ? "stock-selected" : ""
-		} ${!stock.isActive ? "stock-closed" : ""}`}
-		onClick={onClick}
-		disabled={!stock.isActive}
+			className={`stock-card ${
+				selected ? "stock-selected" : ""
+			} ${!stock.isActive ? "stock-closed" : ""}`}
+			onClick={onClick}
+			disabled={!stock.isActive}
+			aria-pressed={selected}
+			aria-label={`${stock.name || stock.ticker}, ${money(stock.price)}${stock.isActive ? "" : ", closed"}`}
 		>
 			<div className="stock-card-head">
 				<img
@@ -48,30 +52,6 @@ export default function StockCard({
 				alt=""
 				className="stock-logo"
 				/>
-
-				<span
-				className={`change-pill ${
-					isUp ? "positive" : isDown ? "negative" : "neutral"
-				}`}
-				>
-				{isUp ? (
-					<ArrowUpRight size={13} />
-				) : isDown ? (
-					<ArrowDownRight size={13} />
-				) : (
-					<Minus size={12} />
-				)}
-
-				{stock?.history?.length > 1
-					? `${Math.abs(percentage).toFixed(2)}%`
-					: "—"}
-				</span>
-			</div>
-
-			<div className="stock-title-row">
-				<div className="stock-name">
-					{stock.name || stock.ticker}
-				</div>
 
 				<div className="stock-ticker">
 					{stock.ticker || stock.id}
@@ -98,15 +78,29 @@ export default function StockCard({
 				</div>
 			</div>
 
+			{/* <Sparkline history={stock.history} /> */}
+
 			{/* Total shares available or Closed status */}
 			{stock.isActive ? (
-				<div className="stock-supply">
-					<span className="stock-supply-label">Available</span>
+				<>
+					<div className="stock-supply">
+						<span className="stock-supply-label">Available</span>
+						<span className="stock-supply-value">
+							{Number(stock.sharesAvailable ?? 0).toLocaleString("en-IN")}
+						</span>
+					</div>
 
-					<span className="stock-supply-value">
-						{Number(stock.sharesAvailable ?? 0).toLocaleString("en-IN")}
-					</span>
-				</div>
+					{stock.totalShares > 0 && (
+						<div className="supply-bar" aria-hidden="true">
+							<span
+								style={{
+									width: `${Math.min(100, Math.max(0,
+										(stock.sharesAvailable / stock.totalShares) * 100))}%`
+								}}
+							/>
+						</div>
+					)}
+				</>
 			) : (
 				<span className="closed-stamp">CLOSED</span>
 			)}
