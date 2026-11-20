@@ -73,7 +73,7 @@ app.get("/", (req, res) => {
         endpoints: {
             health: "/health",
             ping: "/ping",
-            socket: "wss://[this-url]",
+            socket: "ws://[this-url]",
         },
 
         author: "Manthan Patel",

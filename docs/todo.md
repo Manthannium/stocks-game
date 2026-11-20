@@ -1,6 +1,6 @@
 # TODO
 
-### Features
+### Game Features
 1. MARKET EVENTS (public)
     1. STOCK SPLIT
         - Given stock will split in 2:1
@@ -36,6 +36,17 @@
 - IPO stock opening price = base price + (net movement of all stocks + random number)
 - we will try to make IPO opening price positive
 - In open maret phase, IPO is declared and alloted
+
+---
+
+### Frontend
+- Add game rules in the landing page and waiting lobby
+- Add tooltip (i) button to know the UI components
+- better styling (no overlap or overflow of start next cycle button)
+- Add Game score (final leaderboard) as downloadable image at the end of market open
+- Take time to reveal the open market phase (one by one cards)
+- Then one by one display stocks to show their final net movement
+- Admin panel to select the companies
 
 ---
 

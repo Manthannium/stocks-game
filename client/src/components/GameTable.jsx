@@ -149,12 +149,12 @@ export default function GameTable({
         {/* Market Stock cards */}
 
         <div className="market-column">
-        {isMyTurn && (
+        {/* {isMyTurn && (
           <div className="your-turn-banner" role="status">
             <span className="your-turn-tag"><i /> YOUR TURN</span>
             <span>Pick a stock, then trade or pass. Round {actionRound} / 3</span>
           </div>
-        )}
+        )} */}
 
           <div className="stock-grid">
             {stocks.map((stock) => (
