@@ -9,6 +9,9 @@ import {
 		ZapOff
 } from "lucide-react";
 
+import GameRulesButton from "./GameRulesButton";
+import PageBackdrop from "./PageBackdrop";
+
 const TICKER = [
   { t: "PANW", v: 2.4 }, 
   { t: "NVDA", v: -0.8 }, 
@@ -37,6 +40,10 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
   	}
   
   	return (
+		<>
+		{/* Outside .landing-grid: its entrance animation uses a transform. */}
+		<PageBackdrop />
+
 		<section className="landing-grid">
 	  		<div className="hero-copy">
 				<div className="eyebrow">
@@ -45,7 +52,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 				</div>
 
 				<h1 className="hero-title">
-		  			🏛️ Stocks O7 🏛️
+		  			🏛️ Stocks-O7 🏛️
 		  		<br />
 		  		{/* <span>Stocks</span> */}
 				</h1>
@@ -62,7 +69,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			</span>
 			<span>
 			  <b>Stock Market Simulation Game</b>
-			  <small>Buy, sell, short or cover</small>
+			  <small>Buy, Sell, Short or Cover</small>
 			</span>
 		  </div>
 
@@ -72,7 +79,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			</span>
 			<span>
 			  <b>Up to 7 players</b>
-			  <small>Compete in real time</small>
+			  <small>Online Real-time Multiplayer Competitive Game</small>
 			</span>
 		  </div>
 
@@ -82,17 +89,10 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			</span>
 			<span>
 			  <b>Risk & Reward</b>
-			  <small>Analyze, trade & make fortune</small>
+			  <small>Analyze, Trade & Make Strategies</small>
 			</span>
 		  </div>
 		</div>
-
-		{/* <div className="hero-ticker">
-		  <span className="ticker-up">▲ PANW +2.4%</span>
-		  <span className="ticker-down">▼ NVDA -0.8%</span>
-		  <span className="ticker-up">▲ META +1.2%</span>
-		  <span className="ticker-down">▼ MSFT -0.6%</span>
-		</div> */}
 
 		<div className="ticker-marquee" aria-hidden="true">
 		  <div className="ticker-track">
@@ -107,7 +107,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 	  </div>
 
 	  <div className="entry-card">
-		<div className="entry-card-top">
+		{/* <div className="entry-card-top">
 		  <div className="entry-symbol">
 			<ChartNoAxesCombined size={22} />
 		  </div>
@@ -115,12 +115,13 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		  <span className="live-label">
 			<i /> LIVE GAME
 		  </span>
-		</div>
-
-		<h2> Enter the exchange </h2>
-		<p className="muted">
-		  Create a new game or join an existing game.
+		</div> */}
+		<h2 className="entry-title">Play Now!</h2>
+		<p className="muted entry-subtitle">
+		  Start a new game or join friends with a game code.
 		</p>
+
+		<GameRulesButton variant="highlight" className="rules-button-landing" />
 
 		<div className="segmented">
 		  <button
@@ -156,7 +157,7 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			  <input
 				value={code}
 				onChange={(e) => setCode(e.target.value.toUpperCase())}
-				placeholder="Enter game code"
+				placeholder="Enter Game Code"
 				maxLength={10}
 				required
 			  />
@@ -174,8 +175,8 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 			{busy
 			  ? "Connecting..."
 			  : mode === "create"
-			  ? "Create new game"
-			  : "Join the game"}
+			  ? "Create New Game"
+			  : "Join The Game"}
 
 			<ArrowRight size={17} />
 		  </button>
@@ -186,5 +187,6 @@ export default function LandingPage({ onCreate, onJoin, busy }) {
 		</div> */}
 	  </div>
 	</section>
+		</>
   );
 }

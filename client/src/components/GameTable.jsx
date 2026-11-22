@@ -457,6 +457,7 @@ export default function GameTable({
       
       <MarketOpenModal
         game={game}
+        gameCode={gameCode}
         playerId={playerId}
         isHost={isHost}
         busy={busy}

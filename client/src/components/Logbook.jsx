@@ -71,7 +71,11 @@ function describeEntry(entry, players) {
       return {
         tone: "pass",
         isTurn: true,
-        body: <>{name} passed their turn</>
+        body: entry.auto ? (
+          <>{name} was offline · turn passed automatically</>
+        ) : (
+          <>{name} passed their turn</>
+        )
       };
 
     case "GAME_STARTED":

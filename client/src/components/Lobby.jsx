@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   Copy,
@@ -9,6 +9,9 @@ import {
 } from "lucide-react";
 
 import { getPlayerId, getPlayerName, safeArray } from "../utils";
+import GameRulesButton from "./GameRulesButton";
+import PageBackdrop from "./PageBackdrop";
+import StockPicker from "./StockPicker";
 
 export default function Lobby({
   game,
@@ -17,11 +20,58 @@ export default function Lobby({
   isHost,
   busy,
   onStart,
+  onSelectStocks,
   onBack
 }) {
   const players = safeArray(game?.players);
 
   const [copied, setCopied] = useState(false);
+
+  // ---- Stock selection ----------------------------------------------------
+  // The server holds the selection (game.stocks). The host's clicks are
+  // shown immediately (pendingIds) and cleared once the server confirms.
+
+  const requiredStocks = game?.requiredStockCount || 7;
+  const availableStocks = safeArray(game?.availableStocks);
+  const serverStockIds = safeArray(game?.stocks).map((stock) => stock.id);
+  const serverStockKey = serverStockIds.join(",");
+
+  const [pendingIds, setPendingIds] = useState(null);
+  const selectedStockIds = pendingIds ?? serverStockIds;
+  const stocksReady = selectedStockIds.length === requiredStocks;
+
+  useEffect(() => {
+    if (pendingIds && pendingIds.join(",") === serverStockKey) {
+      setPendingIds(null);
+    }
+  }, [serverStockKey, pendingIds]);
+
+  function updateStockSelection(ids) {
+    // Keep catalog order, matching what the server stores.
+    const wanted = new Set(ids);
+    const ordered = availableStocks
+      .filter((stock) => wanted.has(stock.id))
+      .map((stock) => stock.id);
+
+    setPendingIds(ordered);
+    onSelectStocks(ordered).catch(() => setPendingIds(null));
+  }
+
+  function toggleStock(stockId) {
+    updateStockSelection(
+      selectedStockIds.includes(stockId)
+        ? selectedStockIds.filter((id) => id !== stockId)
+        : [...selectedStockIds, stockId]
+    );
+  }
+
+  function resetStocks() {
+    updateStockSelection(
+      availableStocks
+        .filter((stock) => stock.selectedByDefault)
+        .map((stock) => stock.id)
+    );
+  }
 
   async function copyCode() {
     try {
@@ -34,6 +84,10 @@ export default function Lobby({
   }
 
   return (
+    <>
+    {/* Outside .lobby-wrap: its entrance animation uses a transform. */}
+    <PageBackdrop />
+
     <section className="lobby-wrap">
       <button className="back-link" onClick={onBack}>
         <ArrowLeft size={16} /> Back to home
@@ -52,6 +106,8 @@ export default function Lobby({
         <p className="muted">
           Share the game code and wait for everyone to join
         </p>
+
+        <GameRulesButton className="rules-button-lobby" />
       </div>
 
       <div className="lobby-grid">
@@ -69,16 +125,6 @@ export default function Lobby({
             {copied ? <Check size={15} /> : <Copy size={15} />}
             {copied ? "Copied!" : "Copy game code"}
           </button>
-
-          {/* <div className="invite-divider" /> */}
-
-          {/* <div className="invite-tip">
-            <span>✦</span>
-            <p>
-              Send this code to your friends. They can join
-              from the home screen.
-            </p>
-          </div> */}
         </div>
 
         <div className="panel players-panel">
@@ -146,7 +192,7 @@ export default function Lobby({
               <button
                 className="primary-button full-button"
                 onClick={onStart}
-                disabled={busy || players.length < 2}
+                disabled={busy || players.length < 2 || !stocksReady}
               >
                 {busy ? "Starting..." : "Start game"}
                 <Play size={16} fill="currentColor" />
@@ -162,9 +208,28 @@ export default function Lobby({
                 At least 2 players are required to start.
               </small>
             )}
+
+            {isHost && !stocksReady && (
+              <small className="hint">
+                Select exactly {requiredStocks} stocks to start
+                ({selectedStockIds.length} selected).
+              </small>
+            )}
           </div>
         </div>
+
+        {availableStocks.length > 0 && (
+          <StockPicker
+            stocks={availableStocks}
+            selectedIds={selectedStockIds}
+            required={requiredStocks}
+            editable={isHost}
+            onToggle={toggleStock}
+            onReset={resetStocks}
+          />
+        )}
       </div>
     </section>
+    </>
   );
 }

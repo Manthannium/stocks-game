@@ -40,28 +40,13 @@
 ---
 
 ### Frontend
-- Add game rules in the landing page and waiting lobby
 - Add tooltip (i) button to know the UI components
 - better styling (no overlap or overflow of start next cycle button)
-- Add Game score (final leaderboard) as downloadable image at the end of market open
 - Take time to reveal the open market phase (one by one cards)
 - Then one by one display stocks to show their final net movement
-- Admin panel to select the companies
-
----
-
-### Backend
-
-- Allow admin to config stock settings (or simply shuffle stocks profile) - though this is not urgent but this helps to keep game interesting
-
----
-
-### Debt
-
-- Make code clean and modular by separating the concerns and following software design principles
 
 ---
 
 ### Rough
-- We will remove chariman logic as it makes stock rigid and saturates the game
+- We will remove chairman logic as it makes stock rigid and saturates the game
 - when a company is closed, then forget it, we will have IPO

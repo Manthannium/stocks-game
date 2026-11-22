@@ -1,8 +1,8 @@
 {
-  "name": "stocks-client",
+  "name": "stocks-07-client",
   "private": true,
-  "version": "2.0.0",
-  "description": "Stocks Client",
+  "version": "3.0.0",
+  "description": "Stocks 07Client",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
