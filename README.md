@@ -78,13 +78,19 @@ The backend exposes these basic HTTP endpoints for checking whether the server i
 │   │   └── utils.js
 │   └── vite.config.js
 ├── docs
-│   └── game-rules.md
+│   ├── game-rules.md
+│   └── server_changes.md
 ├── server
-│   ├── gameLogic.js
-│   ├── index.js
+│   ├── index.js              # Express app, HTTP endpoints, HTTP + Socket.IO server, startup/shutdown
+│   ├── config.js             # environment settings and server limits
+│   ├── game.js               # pure game rules (no I/O)
+│   ├── socket.js             # Socket.IO events, validation, broadcasting, handlers
+│   ├── utils.js              # logger, game store, sessions, game service, auto-pass timer, cleanup
 │   ├── package-lock.json
 │   └── package.json
 ```
+
+Optional server environment variables: `PORT` (default 3000), `HOST`, `CORS_ORIGIN` (comma-separated, default `*`), `AUTO_PASS_TIMEOUT_MS` (default 60000), `LOG_LEVEL` (`debug|info|warn|error|silent`).
 
 ---
 

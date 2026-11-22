@@ -1,7 +1,7 @@
 {
-  "name": "stock-exchange-server",
-  "version": "2.0.0",
-  "description": "Stock Exchange Server",
+  "name": "stock-07-server",
+  "version": "3.0.0",
+  "description": "Stock 07 Server",
   "type": "module",
   "main": "index.js",
   "scripts": {

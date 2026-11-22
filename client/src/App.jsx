@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket, emitWithAck } from "./socket";
 import LandingPage from "./components/LandingPage";
 import Lobby from "./components/Lobby";
@@ -17,6 +17,14 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
 
+  // Socket listeners are registered once, so they read the latest
+  // player ID through a ref to skip notices about the player themselves.
+  const playerIdRef = useRef("");
+  playerIdRef.current = playerId;
+
+  const latestGameRef = useRef(null);
+  latestGameRef.current = game;
+
   useEffect(() => {
     const onConnect = () => {
       setConnection("connected");
@@ -31,14 +39,19 @@ export default function App() {
         const session = JSON.parse(saved);
         const savedGameCode = session.gameCode;
         const savedPlayerId = session.playerId;
+        const savedToken = session.reconnectToken;
 
-        if (!savedGameCode || !savedPlayerId) return;
+        if (!savedGameCode || !savedPlayerId || !savedToken) {
+          localStorage.removeItem(SESSION_KEY);
+          return;
+        }
 
         socket.emit(
           "rejoinGame",
           {
             gameCode: savedGameCode,
             playerId: savedPlayerId,
+            reconnectToken: savedToken,
           },
           (response) => {
             if (!response?.success) {
@@ -118,7 +131,68 @@ export default function App() {
 
     const onGameFinished = (payload) => {
       if (payload?.game) setGame(payload.game);
-      setNotice("The game has finished.");
+      setNotice(
+        payload?.reason
+          ? `The game has finished: ${payload.reason}`
+          : "The game has finished."
+      );
+    };
+
+    const isMe = (id) => id && id === playerIdRef.current;
+
+    const onPlayerLeft = (payload) => {
+      if (isMe(payload?.playerId)) return;
+
+      const hostNote =
+        payload?.newHostName && isMe(payload?.newHostId)
+          ? " You are now the host."
+          : payload?.newHostName
+          ? ` ${payload.newHostName} is now the host.`
+          : "";
+
+      setNotice(`${payload?.playerName || "A player"} left the game.${hostNote}`);
+    };
+
+    const onPlayerDisconnected = (payload) => {
+      if (isMe(payload?.playerId)) return;
+      setNotice(`${payload?.playerName || "A player"} disconnected.`);
+    };
+
+    const onPlayerReconnected = (payload) => {
+      if (isMe(payload?.playerId)) return;
+      setNotice(`${payload?.playerName || "A player"} reconnected.`);
+    };
+
+    // Trades already appear in the logbook; only surface automatic passes.
+    const onTurnAction = (payload) => {
+      if (!payload?.auto) return;
+
+      const name =
+        latestGameRef.current?.players?.find(
+          (player) => player.id === payload.playerId
+        )?.name || "An offline player";
+
+      setNotice(
+        isMe(payload.playerId)
+          ? "Your turn was passed automatically while you were offline."
+          : `${name} is offline. Their turn was passed automatically.`
+      );
+    };
+
+    const onServerFull = (payload) => {
+      setNotice(
+        payload?.message ||
+          "Server is at maximum capacity. Please try again later."
+      );
+    };
+
+    const onGameExpired = (payload) => {
+      localStorage.removeItem(SESSION_KEY);
+      setGame(null);
+      setGameCode("");
+      setPlayerId("");
+      setScreen("landing");
+      setNotice(payload?.message || "This game has expired.");
     };
 
     // Register listeners
@@ -132,6 +206,12 @@ export default function App() {
     socket.on("playerJoined", onPlayerJoined);
     socket.on("turnChanged", onTurnChanged);
     socket.on("gameFinished", onGameFinished);
+    socket.on("playerLeft", onPlayerLeft);
+    socket.on("playerDisconnected", onPlayerDisconnected);
+    socket.on("playerReconnected", onPlayerReconnected);
+    socket.on("turnAction", onTurnAction);
+    socket.on("serverFull", onServerFull);
+    socket.on("gameExpired", onGameExpired);
 
     // Handle the case where the socket is already connected
     // when this component mounts.
@@ -150,6 +230,12 @@ export default function App() {
       socket.off("playerJoined", onPlayerJoined);
       socket.off("turnChanged", onTurnChanged);
       socket.off("gameFinished", onGameFinished);
+      socket.off("playerLeft", onPlayerLeft);
+      socket.off("playerDisconnected", onPlayerDisconnected);
+      socket.off("playerReconnected", onPlayerReconnected);
+      socket.off("turnAction", onTurnAction);
+      socket.off("serverFull", onServerFull);
+      socket.off("gameExpired", onGameExpired);
     };
   }, []);
 
@@ -159,12 +245,14 @@ export default function App() {
     return () => clearTimeout(id);
   }, [notice]);
 
-  function saveSession(code, id) {
+  // The reconnect token is a secret that proves this browser owns the seat.
+  function saveSession(code, id, reconnectToken) {
     localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
         gameCode: code,
-        playerId: id
+        playerId: id,
+        reconnectToken
       })
     );
   }
@@ -203,7 +291,7 @@ export default function App() {
         setGame(state);
       }
 
-      saveSession(code, id);
+      saveSession(code, id, response.reconnectToken);
       setScreen("lobby");
     } catch (error) {
       setNotice(error.message);
@@ -249,7 +337,7 @@ export default function App() {
         setGame(state);
       }
 
-      saveSession(returnedCode, id);
+      saveSession(returnedCode, id, response.reconnectToken);
 
       setScreen(
         state && state.phase !== "waiting" ? "game" : "lobby"
@@ -258,6 +346,21 @@ export default function App() {
       setNotice(error.message);
     } finally {
       setBusy(false);
+    }
+  }
+
+  // Host-only: replace the lobby's stock selection.
+  // Throws so the lobby can roll back its optimistic selection.
+  async function selectStocks(stockIds) {
+    try {
+      const response = await emitWithAck("selectStocks", { stockIds });
+
+      if (response.gameState) {
+        setGame(response.gameState);
+      }
+    } catch (error) {
+      setNotice(error.message);
+      throw error;
     }
   }
 
@@ -343,8 +446,8 @@ export default function App() {
     socket.emit("leaveGame", {}, (response) => {
       if (!response?.success) {
         if (
-          response?.error === "You are not in a game" ||
-          response?.error === "Game not found"
+          response?.code === "NOT_IN_GAME" ||
+          response?.code === "GAME_NOT_FOUND"
         ) {
           leaveGame();
           return;
@@ -376,7 +479,7 @@ export default function App() {
           <span className="brand-mark">💲</span>
           <span>
             {/* market<span className="brand-accent">rush</span> */}
-            stocks
+            stocks-07
           </span>
         </button>
 
@@ -423,6 +526,7 @@ export default function App() {
             isHost={isHost}
             busy={busy}
             onStart={startGame}
+            onSelectStocks={selectStocks}
             onBack={handleLeaveGame}
           />
         )}

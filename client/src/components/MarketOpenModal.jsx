@@ -7,6 +7,7 @@ import {
   Ban,
   ChevronDown,
   Crown,
+  Download,
   Landmark,
   Medal,
   Minus,
@@ -104,6 +105,7 @@ function Avatar({ name, color }) {
 
 export default function MarketOpenModal({
   game,
+  gameCode,
   playerId,
   isHost,
   busy,
@@ -115,6 +117,9 @@ export default function MarketOpenModal({
 
   // Only used for the final (finished) dialog, which can be closed.
   const [dismissedCycle, setDismissedCycle] = useState(null);
+
+  // True while the result image is being generated.
+  const [downloading, setDownloading] = useState(false);
 
   const visible =
     Boolean(lastOpen) &&
@@ -244,8 +249,59 @@ export default function MarketOpenModal({
     me
   } = data;
 
+  async function handleDownloadResult() {
+    setDownloading(true);
+
+    try {
+      // Loaded on demand so the drawing code isn't in the main bundle.
+      const { downloadResultCard } = await import("../lib/resultImage");
+
+      await downloadResultCard(
+        {
+          gameCode,
+          cycle: lastOpen.cycle,
+          isFinal: isFinished,
+          myPlayerId: playerId,
+
+          standings: byNetWorth.map((result, index) => ({
+            rank: index + 1,
+            rankBefore: result.rankBefore ?? null,
+            playerId: result.playerId,
+            name: result.name,
+            color: result.color,
+            netWorth: result.netWorthAfter,
+            cash: result.cashAfter,
+            holdings: result.holdingsAfter,
+            change: result.change,
+            changePercent: result.changePercent
+          })),
+
+          stocks: stocks.map((stock) => ({
+            ticker: stock.ticker,
+            newPrice: stock.newPrice,
+            percent: stock.percent,
+            isClosed: stock.isClosed
+          }))
+        },
+        `stocks-o7-${gameCode || "game"}-${
+          isFinished ? "final" : `cycle-${lastOpen.cycle}`
+        }.png`
+      );
+    } catch (error) {
+      console.error("Could not download game result:", error);
+      window.alert("Could not create the result image. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
-    <div className="mo-overlay" role="dialog" aria-modal="true">
+    <div
+      className="mo-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mo-title"
+    >
       <div className="mo-dialog">
         {/* ---------------------------------------------------------------- */}
         {/* Header                                                           */}
@@ -260,11 +316,10 @@ export default function MarketOpenModal({
             <div className="panel-label">
               {isFinished ? "FINAL RESULTS" : "MARKET OPENED"}
             </div>
-            <h2>Cycle {lastOpen.cycle} results</h2>
+            <h2 id="mo-title">Cycle {lastOpen.cycle} results</h2>
           </div>
 
           <div className="mo-header-chips">
-            <span className="turn-round">CYCLE {lastOpen.cycle}</span>
             <span className="turn-round">{activeCount} ACTIVE</span>
             {closed.length > 0 && (
               <span className="turn-round mo-chip-closed">
@@ -332,8 +387,13 @@ export default function MarketOpenModal({
           {/* -------------------------------------------------------------- */}
 
           <section>
-            <div className="panel-label mo-section-title">
-              MARKET MOVEMENTS
+            <div className="mo-section-head">
+              <div className="panel-label mo-section-title">
+                MARKET MOVEMENTS
+              </div>
+              <span className="mo-section-hint">
+                Net movement of all revealed cards per stock
+              </span>
             </div>
 
             <div className="table-scroll mo-table-wrap">
@@ -341,12 +401,12 @@ export default function MarketOpenModal({
                 <thead>
                   <tr>
                     <th>STOCK</th>
-                    <th>OLD</th>
-                    <th>MOVE</th>
-                    <th>NEW</th>
-                    <th>CHANGE</th>
+                    <th className="num">OLD</th>
+                    <th className="num">MOVE</th>
+                    <th className="num">NEW</th>
+                    <th className="num">CHANGE</th>
                     <th>STATUS</th>
-                    <th>CARDS (+ / −)</th>
+                    <th className="num">CARDS (+ / −)</th>
                   </tr>
                 </thead>
 
@@ -369,14 +429,14 @@ export default function MarketOpenModal({
                           </div>
                         </td>
 
-                        <td>{money(stock.oldPrice)}</td>
+                        <td className="num">{money(stock.oldPrice)}</td>
 
-                        <td className={`${toneOf(stock.movement)}-text`}>
+                        <td className={`num ${toneOf(stock.movement)}-text`}>
                           {stock.movement > 0 ? "+" : ""}
                           {Number(stock.movement).toFixed(1)}
                         </td>
 
-                        <td>
+                        <td className="num">
                           {stock.isClosed ? (
                             <span className="negative-text">$0.00</span>
                           ) : (
@@ -384,7 +444,7 @@ export default function MarketOpenModal({
                           )}
                         </td>
 
-                        <td className={`${toneOf(stock.percent)}-text`}>
+                        <td className={`num ${toneOf(stock.percent)}-text`}>
                           {signedPercent(stock.percent)}
                         </td>
 
@@ -395,7 +455,7 @@ export default function MarketOpenModal({
                           </span>
                         </td>
 
-                        <td>
+                        <td className="num">
                           {stock.cards.count}{" "}
                           <small className="mo-muted">
                             (<span className="positive-text">
@@ -421,8 +481,13 @@ export default function MarketOpenModal({
           {/* -------------------------------------------------------------- */}
 
           <section>
-            <div className="panel-label mo-section-title">
-              PLAYER PERFORMANCE
+            <div className="mo-section-head">
+              <div className="panel-label mo-section-title">
+                PLAYER PERFORMANCE
+              </div>
+              <span className="mo-section-hint">
+                Sorted by this cycle's change
+              </span>
             </div>
 
             <div className="table-scroll mo-table-wrap">
@@ -430,11 +495,11 @@ export default function MarketOpenModal({
                 <thead>
                   <tr>
                     <th>PLAYER</th>
-                    <th>NET WORTH BEFORE</th>
-                    <th>HOLDINGS Δ</th>
-                    <th>SHORTS P&amp;L</th>
-                    <th>CHANGE</th>
-                    <th>NET WORTH NOW</th>
+                    <th className="num">NET WORTH BEFORE</th>
+                    <th className="num">HOLDINGS Δ</th>
+                    <th className="num">SHORTS P&amp;L</th>
+                    <th className="num">CHANGE</th>
+                    <th className="num">NET WORTH NOW</th>
                   </tr>
                 </thead>
 
@@ -458,24 +523,24 @@ export default function MarketOpenModal({
                         </div>
                       </td>
 
-                      <td>{money(result.netWorthBefore)}</td>
+                      <td className="num">{money(result.netWorthBefore)}</td>
 
-                      <td>
+                      <td className="num">
                         <Delta value={result.longPnL} />
                       </td>
 
-                      <td>
+                      <td className="num">
                         <Delta value={result.shortPnL} />
                       </td>
 
-                      <td>
+                      <td className="num">
                         <Delta
                           value={result.change}
                           percent={result.changePercent}
                         />
                       </td>
 
-                      <td>
+                      <td className="num">
                         <b>{money(result.netWorthAfter)}</b>
                       </td>
                     </tr>
@@ -677,7 +742,7 @@ export default function MarketOpenModal({
             {isFinished ? (
               "The game has finished. These are the final standings."
             ) : isHost ? (
-              "Next cycle: everyone receives the additional purse and a fresh hand. Long holdings carry forward."
+              "Next cycle: everyone gets the additional purse and a new hand. Long holdings carry over."
             ) : (
               <span className="mo-waiting">
                 <i /> Waiting for the host to start the next cycle…
@@ -685,26 +750,37 @@ export default function MarketOpenModal({
             )}
           </div>
 
-          {isFinished ? (
+          <div className="mo-footer-actions">
             <button
               className="secondary-button"
-              onClick={() => setDismissedCycle(lastOpen.cycle)}
+              onClick={handleDownloadResult}
+              disabled={downloading}
             >
-              <X size={14} /> Close
+              <Download size={14} />
+              {downloading ? "Preparing..." : "Download game result"}
             </button>
-          ) : (
-            isHost && (
+
+            {isFinished ? (
               <button
-                className="primary-button"
-                onClick={onNextCycle}
-                disabled={busy}
+                className="secondary-button"
+                onClick={() => setDismissedCycle(lastOpen.cycle)}
               >
-                <RefreshCw size={15} />
-                {busy ? "Starting..." : "Start next cycle"}
-                <ArrowRight size={15} />
+                <X size={14} /> Close
               </button>
-            )
-          )}
+            ) : (
+              isHost && (
+                <button
+                  className="primary-button"
+                  onClick={onNextCycle}
+                  disabled={busy}
+                >
+                  <RefreshCw size={15} />
+                  {busy ? "Starting..." : "Start next cycle"}
+                  <ArrowRight size={15} />
+                </button>
+              )
+            )}
+          </div>
         </div>
       </div>
     </div>
